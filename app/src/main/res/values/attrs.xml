@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="customAttrs">
+        <attr name="generalIconColor" format="reference"/>
+        <attr name="fabIconColor" format="reference"/>
+        <attr name="accentColor" format="reference"/>
+        <attr name="darkAccentColor" format="reference"/>
+        <attr name="textColorAgainstBackground" format="reference"/>
+        <attr name="textColorAgainstAccent" format="reference"/>
+        <attr name="textColorSubtle" format="reference"/>
+    </declare-styleable>
+</resources>

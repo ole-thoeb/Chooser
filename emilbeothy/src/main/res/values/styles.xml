@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="BetterEditText" parent="android:Widget.EditText">
+        <item name="android:background">@drawable/transparent</item>
+        <item name="android:inputType">textCapSentences|textMultiLine</item>
+    </style>
+</resources>

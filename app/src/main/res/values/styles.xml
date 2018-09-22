@@ -1,0 +1,58 @@
+<resources>
+
+    <!-- Base application theme. -->
+    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:textColor">@android:color/black</item>
+    </style>
+
+    <style name="AppTheme.NoActionBar">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
+
+    <style name="LightAppTheme" parent="Theme.AppCompat.Light">
+        <item name="colorAccent">@color/colorAccentLightTheme</item>
+
+        <item name="textColorAgainstBackground">@android:color/black</item>
+        <item name="textColorAgainstAccent">@android:color/white</item>
+        <item name="fabIconColor">@android:color/white</item>
+        <item name="generalIconColor">@android:color/black</item>
+        <item name="accentColor">@color/colorAccentLightTheme</item>
+        <item name="darkAccentColor">@color/darkHighlightColor</item>
+        <item name="textColorSubtle">@android:color/tertiary_text_light</item>
+    </style>
+
+    <style name="LightAppTheme.ColoredActionBar">
+        <item name="colorPrimary">@color/colorAccentLightTheme</item>
+        <item name="colorPrimaryDark">@color/darkHighlightColor</item>
+    </style>
+
+    <style name="DarkAppTheme" parent="Theme.AppCompat">
+        <item name="colorAccent">@color/colorAccentLightTheme</item>
+
+        <item name="textColorAgainstBackground">@android:color/white</item>
+        <item name="textColorAgainstAccent">@android:color/white</item>
+        <item name="fabIconColor">@android:color/white</item>
+        <item name="generalIconColor">@android:color/white</item>
+        <item name="accentColor">@color/colorAccentLightTheme</item>
+        <item name="darkAccentColor">@color/darkHighlightColor</item>
+        <item name="textColorSubtle">@android:color/tertiary_text_dark</item>
+    </style>
+
+    <style name="DarkAppTheme.ColoredActionBar">
+        <item name="colorPrimary">@color/colorAccentLightTheme</item>
+        <item name="colorPrimaryDark">@color/darkHighlightColor</item>
+    </style>
+
+
+    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
+
+    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
+
+    <!--widget Styles-->
+
+</resources>

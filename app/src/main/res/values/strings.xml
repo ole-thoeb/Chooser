@@ -1,0 +1,44 @@
+<resources>
+    <string name="app_name">Chooser</string>
+    <string name="action_settings">Settings</string>
+
+    <string name="edit">Bearbeiten</string>
+    <string name="delete">Löschen</string>
+    <string name="restart">Neu Beginnen</string>
+
+    <string name="newItem">Neues Item</string>
+    <string name="addItem">Item</string>
+
+    <string name="title">Titel</string>
+
+    <string name="progressString">%1$d/%2$d</string>
+    <string name="displayItemListString">%1$d.  %2$s</string>
+
+    <string name="emptyListMessage">Du hast noch keine Liste. Um eine neue Liste hinzuzufügen drücke unten auf das +</string>
+
+    <string name="noItem">Kein Item</string>
+
+    <string name="randomPick">Zufällige Wahl</string>
+    <string name="randomOrder">Zufällige Reihenfolge</string>
+    <string name="modeRandomOrder">Modus: z Reihenfolge</string>
+    <string name="modeRandomPick">Modus: z Wahl</string>
+
+    <string name="chooseMode">Wähle Modus</string>
+
+    <string-array name="modeArray">
+        <item>@string/randomPick</item>
+        <item>@string/randomOrder</item>
+    </string-array>
+
+    <string name="error">ERROR</string>
+
+    <string name="dialogNoMoreItemsMessage">Du hast das Ende der Liste ereicht</string>
+    <string name="dialogNoMoreItemsPositive">Neustarten</string>
+    <string name="dialogNoMoreItemsNegative">Löschen</string>
+
+    <string name="dialogPositive">Jop</string>
+    <string name="dialogNegative">Nope</string>
+
+    <string name="dialogDeleteListMessage">Diese Liste löschen?</string>
+    <string name="dialogRestartListMessage">Diese Liste neustarten</string>
+</resources>
