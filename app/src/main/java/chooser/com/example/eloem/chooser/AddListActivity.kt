@@ -24,9 +24,9 @@ class AddListActivity : AppCompatActivity() {
     
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(if (readCurrentThem(this)){
-            R.style.DarkAppTheme_ColoredActionBar
+            R.style.DarkAppTheme
         }else{
-            R.style.LightAppTheme_ColoredActionBar
+            R.style.LightAppTheme
         })
         
         super.onCreate(savedInstanceState)
