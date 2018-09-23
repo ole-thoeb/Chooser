@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name">Chooser</string>
-    <string name="action_settings">Settings</string>
+    <string name="title_activity_settings">Einstellungen</string>
+    <string name="action_settings">Einstellungen</string>
 
     <string name="edit">Bearbeiten</string>
     <string name="delete">Löschen</string>
@@ -41,4 +42,10 @@
 
     <string name="dialogDeleteListMessage">Diese Liste löschen?</string>
     <string name="dialogRestartListMessage">Diese Liste neustarten</string>
+
+    <!-- Strings related to Settings -->
+
+    <string name="settingsThemeTitle">Theme</string>
+    <string name="settingsThemeSummary">Aktivieren für dark theme</string>
+
 </resources>

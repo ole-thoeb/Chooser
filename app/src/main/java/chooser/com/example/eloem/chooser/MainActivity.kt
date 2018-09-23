@@ -15,6 +15,13 @@ import kotlinx.android.synthetic.main.activity_main.*
 class MainActivity : AppCompatActivity() {
     
     override fun onCreate(savedInstanceState: Bundle?) {
+        setTheme(if (readCurrentThem(this)){
+            R.style.DarkAppTheme_ColoredActionBar
+        }else{
+            R.style.LightAppTheme_ColoredActionBar
+        })
+        /**new theme was applied*/
+        writeRecreateMain(this, false)
         super.onCreate(savedInstanceState)
         
         setContentView(R.layout.activity_main)
@@ -35,6 +42,7 @@ class MainActivity : AppCompatActivity() {
     }
     
     override fun onResume() {
+        if (readRecreateMain(this)) recreate()
         super.onResume()
         
         //get data from database
@@ -87,7 +95,10 @@ class MainActivity : AppCompatActivity() {
         // as you specify a parent activity in AndroidManifest.xml.
         //TODO: correct menu resource and actions
         return when (item.itemId) {
-            R.id.action_settings -> true
+            R.id.action_settings -> {
+                startActivity(Intent(this, SettingsActivity::class.java))
+                true
+            }
             else -> super.onOptionsItemSelected(item)
         }
     }

@@ -23,6 +23,12 @@ class AddListActivity : AppCompatActivity() {
     private lateinit var data: ListObj
     
     override fun onCreate(savedInstanceState: Bundle?) {
+        setTheme(if (readCurrentThem(this)){
+            R.style.DarkAppTheme_ColoredActionBar
+        }else{
+            R.style.LightAppTheme_ColoredActionBar
+        })
+        
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_add_list)
         

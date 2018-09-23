@@ -15,10 +15,7 @@ import android.view.ViewGroup
 import android.widget.BaseAdapter
 import android.widget.TextView
 import chooser.com.example.eloem.chooser.helperClasses.ListObj
-import chooser.com.example.eloem.chooser.util.deleteListEntry
-import chooser.com.example.eloem.chooser.util.getAttribut
-import chooser.com.example.eloem.chooser.util.updateJustList
-import chooser.com.example.eloem.chooser.util.updateListEntryComplete
+import chooser.com.example.eloem.chooser.util.*
 import kotlinx.android.synthetic.main.activity_display_item.*
 import kotlinx.android.synthetic.main.display_item_bottom_sheet.*
 
@@ -27,6 +24,12 @@ class DisplayItemActivity : AppCompatActivity() {
     lateinit var data: ListObj
     
     override fun onCreate(savedInstanceState: Bundle?) {
+        setTheme(if (readCurrentThem(this)){
+            R.style.DarkAppTheme_ColoredActionBar
+        }else{
+            R.style.LightAppTheme_ColoredActionBar
+        })
+        
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_display_item)
         

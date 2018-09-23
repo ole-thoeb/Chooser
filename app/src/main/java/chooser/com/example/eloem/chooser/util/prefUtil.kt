@@ -38,3 +38,22 @@ fun newListId(context: Context): Int{
     writeListId(context, id + 1)
     return id
 }
+
+const val CURRENT_THEME_ID = "preference_theme"
+
+fun readCurrentThem(context: Context): Boolean{
+    val pM = PreferenceManager.getDefaultSharedPreferences(context)
+    return pM.getBoolean(CURRENT_THEME_ID, false)
+}
+
+const val NEED_TO_RECREATE_MAIN = "recreateMain"
+
+fun writeRecreateMain(context: Context, value: Boolean){
+    val pM = PreferenceManager.getDefaultSharedPreferences(context).edit()
+    pM.putBoolean(NEED_TO_RECREATE_MAIN, value).apply()
+}
+
+fun readRecreateMain(context: Context): Boolean{
+    val pM = PreferenceManager.getDefaultSharedPreferences(context)
+    return pM.getBoolean(NEED_TO_RECREATE_MAIN, false)
+}
