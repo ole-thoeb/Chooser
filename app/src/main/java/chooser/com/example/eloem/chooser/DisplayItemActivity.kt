@@ -3,11 +3,11 @@ package chooser.com.example.eloem.chooser
 import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
-import android.graphics.Color
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import android.support.design.widget.BottomSheetBehavior
 import android.support.v4.app.NavUtils
-import android.util.TypedValue
+import android.support.v4.content.ContextCompat
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
@@ -24,11 +24,7 @@ class DisplayItemActivity : AppCompatActivity() {
     lateinit var data: ListObj
     
     override fun onCreate(savedInstanceState: Bundle?) {
-        setTheme(if (readCurrentThem(this)){
-            R.style.DarkAppTheme
-        }else{
-            R.style.LightAppTheme
-        })
+        setTheme(currentTheme)
         
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_display_item)
@@ -39,16 +35,37 @@ class DisplayItemActivity : AppCompatActivity() {
         supportActionBar?.setDisplayShowTitleEnabled(false)
         //set data in bottom sheet
         listTitleTV.text = data.title
+        val sheetBehavior = BottomSheetBehavior.from(bottomSheet)
+        listTitleTV.setOnClickListener {
+            sheetBehavior.state = if (sheetBehavior.state != BottomSheetBehavior.STATE_EXPANDED)
+                BottomSheetBehavior.STATE_EXPANDED
+            else BottomSheetBehavior.STATE_COLLAPSED
+        }
         list.adapter = ListAdapter(this)
         
         updateUiWithData()
         
         nextItemFAB.setOnClickListener {
-            if (data.nextItem()) { // show next Item
+            if (data.hasNext) { // show next Item
+                data.nextItem()
                 updateJustList(this, data)
                 updateUiWithData()
             } else { // build dialog
-                val builder = AlertDialog.Builder(this)
+                AlertDialog.Builder(this)
+                        .setMessage(R.string.dialogRestartListMessage)
+                        .setNegativeButton(R.string.dialogNegative) { _, _ ->
+                            //nothing
+                        }
+                        .setPositiveButton(R.string.dialogPositive) { _, _ ->
+                            data.restart()
+                            updateItems(this, data.items)
+                            updateJustList(this, data)
+                            nextItemFAB.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ic_arrow_forward))
+                            updateUiWithData()
+                        }
+                        .show()
+                
+                /*val builder = AlertDialog.Builder(this)
                 builder.setMessage(R.string.dialogNoMoreItemsMessage)
                         .setNegativeButton(R.string.dialogNoMoreItemsNegative) { dialog, which ->
                             deleteListEntry(this, data.id)
@@ -59,7 +76,7 @@ class DisplayItemActivity : AppCompatActivity() {
                             updateListEntryComplete(this, data)
                             updateUiWithData()
                         }
-                        .show()
+                        .show()*/
             }
         }
     }
@@ -92,6 +109,7 @@ class DisplayItemActivity : AppCompatActivity() {
                     }
                     .setPositiveButton(R.string.dialogPositive) { _, _ ->
                         data.restart()
+                        updateItems(this, data.items)
                         updateUiWithData()
                     }
                     .show()
@@ -121,19 +139,14 @@ class DisplayItemActivity : AppCompatActivity() {
         
         (list.adapter as ListAdapter).notifyDataSetChanged()
         
+        if (!data.hasNext) nextItemFAB.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ic_refresh))
     }
     
     inner class ListAdapter(val context: Context) : BaseAdapter() {
         
-        var accentColor = 0
-        var textColor = 0
-        var backgroundColor = 0
-        
-        init {
-            accentColor = context.getAttribut(R.attr.colorAccent, true).data
-            textColor = context.getAttribut(R.attr.itemTextColor, true).data
-            backgroundColor = context.getAttribut(R.attr.background, true).data
-        }
+        private val accentColor = context.getAttribute(R.attr.colorAccent, true).data
+        private val textColor = context.getAttribute(R.attr.itemTextColor, true).data
+        private val backgroundColor = context.getAttribute(R.attr.background, true).data
         
         override fun getCount() = data.items.size
         

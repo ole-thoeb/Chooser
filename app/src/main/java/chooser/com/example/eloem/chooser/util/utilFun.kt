@@ -13,7 +13,7 @@ fun hideSoftKeyboard(context: Context, view: View?){
 
 fun randomInt(from: Int, to: Int) = Random().nextInt(to) + from
 
-fun Context.getAttribut(resourceId: Int, resolveRef: Boolean): TypedValue{
+fun Context.getAttribute(resourceId: Int, resolveRef: Boolean = true): TypedValue{
     val tv = TypedValue()
     theme.resolveAttribute(resourceId, tv, resolveRef)
     return tv

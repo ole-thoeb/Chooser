@@ -47,5 +47,19 @@
 
     <string name="settingsThemeTitle">Theme</string>
     <string name="settingsThemeSummary">Aktivieren für dark theme</string>
+    <string name="lightTheme">Light Theme</string>
+    <string name="darkTheme">Dark Theme</string>
+    <string name="blackTheme">Black Theme</string>
+    <string-array name="themes">
+        <item>@string/lightTheme</item>
+        <item>@string/darkTheme</item>
+        <item>@string/blackTheme</item>
+    </string-array>
+    <string name="defaultThemeValue">0</string>
+    <string-array name="settingsThemeValue">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+    </string-array>
 
 </resources>

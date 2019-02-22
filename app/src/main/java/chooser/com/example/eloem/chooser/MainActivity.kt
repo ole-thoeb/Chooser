@@ -3,23 +3,22 @@ package chooser.com.example.eloem.chooser
 import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.CardView
 import android.view.*
 import android.widget.*
 import chooser.com.example.eloem.chooser.helperClasses.ListObj
+import chooser.com.example.eloem.chooser.helperClasses.database
 import chooser.com.example.eloem.chooser.util.*
 import kotlinx.android.synthetic.main.activity_main.*
+import org.jetbrains.anko.defaultSharedPreferences
 
 class MainActivity : AppCompatActivity() {
     
     override fun onCreate(savedInstanceState: Bundle?) {
-        setTheme(if (readCurrentThem(this)){
-            R.style.DarkAppTheme_ColoredActionBar
-        }else{
-            R.style.LightAppTheme_ColoredActionBar
-        })
+        setTheme(currentColoredTheme)
         /**new theme was applied*/
         writeRecreateMain(this, false)
         super.onCreate(savedInstanceState)

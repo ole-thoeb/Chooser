@@ -23,11 +23,7 @@ class AddListActivity : AppCompatActivity() {
     private lateinit var data: ListObj
     
     override fun onCreate(savedInstanceState: Bundle?) {
-        setTheme(if (readCurrentThem(this)){
-            R.style.DarkAppTheme
-        }else{
-            R.style.LightAppTheme
-        })
+        setTheme(currentTheme)
         
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_add_list)
@@ -184,6 +180,10 @@ class AddListActivity : AppCompatActivity() {
                                 }
                             }
                             false
+                        }
+                        onFocusChangeListener = View.OnFocusChangeListener { tv, hasFocus ->
+                            realHolder.deleteButton.visibility = if (hasFocus) View.VISIBLE
+                            else View.GONE
                         }
                         //set Focus to newly added textViews
                         requestFocus()

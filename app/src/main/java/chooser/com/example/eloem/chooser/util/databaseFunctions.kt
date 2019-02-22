@@ -40,13 +40,13 @@ fun insertItems(context: Context, listObj: ListObj) = context.database.use {
 // updates the list entry, including all items
 fun updateListEntryComplete(context: Context, listObj: ListObj){
     updateJustList(context, listObj)
-    //TODO use update and handel then nothing to update
+    //TODO use update and handel when nothing to update
     //updateItem(context, listObj.items)
     deleteItems(context, listObj.id)
     insertItems(context, listObj)
 }
 
-fun updateItem(context: Context, items: Array<ListObj.Item>) = context.database.use {
+fun updateItems(context: Context, items: Array<ListObj.Item>) = context.database.use {
     items.forEachIndexed{index, item ->
         update(ListContract.ItemEntry.TABLE_NAME, ListContract.ItemEntry.COLUMN_NAME_POSITION to index,
                 ListContract.ItemEntry.COLUMN_NAME_NAME to item.name)
@@ -57,7 +57,8 @@ fun updateItem(context: Context, items: Array<ListObj.Item>) = context.database.
 }
 // updates just the list. doesn't change the items
 fun updateJustList(context: Context, listObj: ListObj) = context.database.use {
-    update(ListContract.ListEntry.TABLE_NAME, ListContract.ListEntry.COLUMN_NAME_NAME to listObj.title,
+    update(ListContract.ListEntry.TABLE_NAME,
+            ListContract.ListEntry.COLUMN_NAME_NAME to listObj.title,
             ListContract.ListEntry.COLUMN_NAME_CURRENT_POS to listObj.currentPos)
             .whereArgs("${ListContract.ListEntry.COLUMN_NAME_ID} = {id}", "id" to listObj.id)
             .exec()

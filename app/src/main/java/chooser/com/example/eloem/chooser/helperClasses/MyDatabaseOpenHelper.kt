@@ -6,7 +6,7 @@ import chooser.com.example.eloem.chooser.util.ListContract
 import chooser.com.example.eloem.chooser.util.createTables
 import org.jetbrains.anko.db.*
 
-class MyDatabaseOpenHelper(context: Context): ManagedSQLiteOpenHelper(context, "MyDatabase", null, 2) {
+class MyDatabaseOpenHelper(context: Context): ManagedSQLiteOpenHelper(context, "MyDatabase", null, 3) {
     override fun onCreate(db: SQLiteDatabase?) {
         db?.createTable(ListContract.ListEntry.TABLE_NAME, true,
                 ListContract.ListEntry.COLUMN_NAME_ID to INTEGER + PRIMARY_KEY + UNIQUE,

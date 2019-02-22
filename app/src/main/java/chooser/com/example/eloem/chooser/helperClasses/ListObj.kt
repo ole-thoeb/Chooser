@@ -12,16 +12,23 @@ data class ListObj(val id: Int, var title: String, var items: @RawValue Array<It
     
     val hasNoItems get() = items.isEmpty()
     
+    val hasNext: Boolean get() = when(mode) {
+        MODE_RANDOM_ORDER -> currentPos + 1 < items.size
+        MODE_SINGLE_PICK -> true
+        else -> false
+    }
+    
     fun restart(){
         when (mode) {
             MODE_RANDOM_ORDER -> {
                 currentPos = 0
                 items = items.toList().shuffled().toTypedArray()
-                
+            
             }
-            MODE_SINGLE_PICK ->currentPos = randomInt(0, items.size)
+            MODE_SINGLE_PICK -> currentPos = randomInt(0, items.size)
         }
     }
+    
     
     fun nextItem(): Boolean = when(mode){
         MODE_RANDOM_ORDER ->  {

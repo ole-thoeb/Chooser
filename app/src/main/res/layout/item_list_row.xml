@@ -31,7 +31,7 @@
         android:layout_width="24dp"
         android:layout_height="24dp"
         android:layout_gravity="end|top"
-        android:background="@drawable/transparent"
+        android:background="@drawable/round_button_background"
         android:src="@drawable/ic_clear"
         android:tint="?attr/generalIconColor"/>
 

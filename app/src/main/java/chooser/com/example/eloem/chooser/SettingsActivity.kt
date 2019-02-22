@@ -5,7 +5,9 @@ import android.content.res.Configuration
 import android.os.Bundle
 import android.preference.PreferenceActivity
 import android.preference.PreferenceFragment
-import chooser.com.example.eloem.chooser.util.readCurrentThem
+import android.view.ViewGroup
+import chooser.com.example.eloem.chooser.util.currentColoredTheme
+import chooser.com.example.eloem.chooser.util.getAttribute
 import chooser.com.example.eloem.chooser.util.writeRecreateMain
 
 
@@ -22,14 +24,17 @@ import chooser.com.example.eloem.chooser.util.writeRecreateMain
 class SettingsActivity : AppCompatPreferenceActivity() {
     
     override fun onCreate(savedInstanceState: Bundle?) {
-        setTheme(if (readCurrentThem(this)){
-            R.style.DarkAppTheme_ColoredActionBar
-        }else{
-            R.style.LightAppTheme_ColoredActionBar
-        })
+        setTheme(currentColoredTheme)
         super.onCreate(savedInstanceState)
+        
         setupActionBar()
-        fragmentManager.beginTransaction().replace(android.R.id.content, SettingsFragment()).commit()
+        findViewById<ViewGroup>(android.R.id.content).setBackgroundColor(
+                getAttribute(R.attr.backgroundColor).data
+        )
+        fragmentManager
+                .beginTransaction()
+                .replace(android.R.id.content, SettingsFragment())
+                .commit()
     }
     
     /**
@@ -61,12 +66,7 @@ class SettingsActivity : AppCompatPreferenceActivity() {
             super.onCreate(savedInstanceState)
             addPreferencesFromResource(R.xml.pref_settings)
             
-            findPreference("preference_theme").setOnPreferenceChangeListener { _, _ ->
-                /*TaskStackBuilder.create(activity)
-                        .addNextIntent(Intent(activity, MainActivity::class.java))
-                        .addNextIntent(activity.intent)
-                        .startActivities()
-                        */
+            findPreference("settingsTheme").setOnPreferenceChangeListener { _, _ ->
                 activity.recreate()
                 writeRecreateMain(context, true)
     

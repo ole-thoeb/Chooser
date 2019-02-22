@@ -1,13 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#3F51B5</color>
-    <color name="colorPrimaryDark">#303F9F</color>
-    <color name="colorAccent">#FF4081</color>
-
     <color name="darkGey">#404142</color>
     <color name="lightLightGrey">#d6d8db</color>
     
     <color name="colorAccentLightTheme">@android:color/holo_red_dark</color>
-    <color name="darkHighlightColor">#ff930000</color>
-    <color name="colorAccentDarkTheme">#d80a0a</color>
+    <color name="darkHighlightColor">#FF930000</color>
+    <color name="colorAccentDarkTheme">#FFd80a0a</color>
+
+    <color name="buttonSelectColorLight">#4DA0A0A0</color>
+    <color name="buttonSelectColorDark">#4DD3D3D3</color>
+
+    <color name="materialBackgroundDark">#FF303030</color>
+    <color name="materialBackgroundLight">#FFFAFAFA</color>
 </resources>

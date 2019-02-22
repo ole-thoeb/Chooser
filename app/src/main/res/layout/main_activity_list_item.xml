@@ -11,7 +11,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:foreground="?android:attr/selectableItemBackground"
-        app:cardCornerRadius="4dp"
+        android:background="?attr/mCardBackgroundColor"
+        app:cardCornerRadius="@dimen/cardCornerRadius"
         app:cardElevation="8dp"
         android:layout_marginVertical="@dimen/smallPadding"
         android:layout_marginHorizontal="@dimen/standardPadding">
@@ -20,7 +21,8 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="horizontal"
-            android:weightSum="2">
+            android:weightSum="2"
+            android:background="?attr/cardBoarder">
 
             <TextView
                 android:id="@+id/titleTV"
@@ -73,7 +75,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:padding="@dimen/standardPadding"
-                android:background="?android:attr/selectableItemBackground"
+                android:background="@drawable/round_button_background"
                 android:src="@drawable/ic_overflow"
                 android:tint="?attr/generalIconColor"
                 android:layout_gravity="center_vertical"/>
