@@ -14,7 +14,7 @@ object ListContract {
     object ItemEntry: BaseColumns{
         const val TABLE_NAME = "items"
         const val COLUMN_NAME_ID = "itemId"
-        const val COLUMN_NAME_NAME = "itemName"
+        const val COLUMN_NAME_NAME = "itemNameET"
         const val COLUMN_NAME_LIST = "listId"
         const val COLUMN_NAME_POSITION = "position"
     }

@@ -8,7 +8,6 @@ import android.support.v4.app.NavUtils
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.view.*
-import android.view.inputmethod.InputMethodManager
 import android.widget.ImageButton
 import android.widget.LinearLayout
 import android.widget.TextView
@@ -133,11 +132,13 @@ class AddListActivity : AppCompatActivity() {
         NavUtils.navigateUpFromSameTask(this)
     }
     
-    class MyListAdapter(private val context: Context, var values: MutableList<ListObj.Item>): RecyclerView.Adapter<RecyclerView.ViewHolder>(){
+    class MyListAdapter(private val context: Context, var values: MutableList<ListObj.Item>):
+            RecyclerView.Adapter<RecyclerView.ViewHolder>(){
+        
         private lateinit var mRecyclerView: RecyclerView
         
         class ViewHolder1(layout: View): RecyclerView.ViewHolder(layout){
-            val itemName: BetterEditText = layout.findViewById(R.id.playerName)
+            val itemNameET: BetterEditText = layout.findViewById(R.id.itemName)
             val deleteButton: ImageButton = layout.findViewById(R.id.deleteButton)
         }
         
@@ -156,46 +157,53 @@ class AddListActivity : AppCompatActivity() {
         
         override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
             when (holder.itemViewType){
-                0 ->{
+                0 -> {
                     val realHolder = holder as ViewHolder1
-                    with(realHolder.itemName) {
+                    with(realHolder.itemNameET) {
                         setText(values[position].name, TextView.BufferType.EDITABLE)
-                        setTextChangeListener = { charSequence, betterEditText ->
+                        onTextChangeListener = { charSequence, betterEditText ->
                             val pos = realHolder.adapterPosition
                             if (pos < values.size) {
                                 values[pos].name = charSequence.toString()
                             }
                         }
-                        setEnterKeyListener = {afterEnterString ->
-                            addNewItem(realHolder.adapterPosition +  1, afterEnterString)
-                        }
-                        setOnKeyListener { view, i, keyEvent ->
-                            //handel special actions on backspace
-                            if (keyEvent.action == KeyEvent.ACTION_UP) {
-                                when (keyEvent.keyCode) {
-                                    KeyEvent.KEYCODE_DEL -> {
-                                        removeItem(realHolder.adapterPosition)
-                                        return@setOnKeyListener true
-                                    }
+                        onLineBreakListener = { subStrings, view ->
+                            val pos = realHolder.adapterPosition
+                            if (subStrings.size == 1) addNewItem(pos + 1, subStrings.first())
+                            else {
+                                subStrings.forEachIndexed { index, s ->
+                                    values.add(pos + index + 1,
+                                            ListObj.Item(s, newItemId(context)))
                                 }
+                                val lastPos = pos + subStrings.size + 1
+                                notifyItemRangeInserted(pos + 1, subStrings.size)
+                                mRecyclerView.scrollToPosition(lastPos)
                             }
-                            false
+                        }
+                        onDelAtStartListener = { restString, view ->
+                            val pos = realHolder.adapterPosition
+                            removeItem(pos, restString)
                         }
                         onFocusChangeListener = View.OnFocusChangeListener { tv, hasFocus ->
-                            realHolder.deleteButton.visibility = if (hasFocus) View.VISIBLE
-                            else View.GONE
+                            with(realHolder.deleteButton){
+                                if (hasFocus){
+                                    setImageDrawable(resources.getDrawable(R.drawable.ic_clear, context.theme))
+                                    isClickable = true
+                                }else {
+                                    setImageDrawable(resources.getDrawable(R.drawable.transparent, context.theme))
+                                    isClickable = false
+                                }
+                            }
                         }
-                        //set Focus to newly added textViews
-                        requestFocus()
+                        
+                        //set Focus to newly added textViews and show keyboard
+                        focusAndShowKeyboard()
+                        setSelection(values[position].name.length)
                     }
-                    //show keyboard and not hide it if it is visible
-                    val ipm = context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-                    ipm.toggleSoftInput(InputMethodManager.SHOW_FORCED, InputMethodManager.HIDE_NOT_ALWAYS)
     
-                    realHolder.deleteButton.setOnClickListener{ removeItem(realHolder.adapterPosition) }
+                    realHolder.deleteButton.setOnClickListener { removeItem(realHolder.adapterPosition) }
                 }
-                
-                1 ->{
+                1 -> {
                     val realHolder = holder as ViewHolder2
                     realHolder.linLayout.setOnClickListener { addNewItem(values.size) }
                 }
@@ -220,31 +228,37 @@ class AddListActivity : AppCompatActivity() {
         
         private fun addNewItem(pos: Int, startString: String = ""){
             values.add(pos, ListObj.Item(startString, newItemId(context)))
-            this.notifyItemInserted(pos)
+            notifyItemInserted(pos)
             mRecyclerView.scrollToPosition(pos)
         }
         
-        private fun removeItem(pos: Int){
-            val gvH = mRecyclerView.findViewHolderForAdapterPosition(pos)?: return
+        private fun removeItem(pos: Int, remainingText: String = ""){
+            val gvH = mRecyclerView.findViewHolderForAdapterPosition(pos) ?: return
             val vH =  gvH as ViewHolder1
-            if (vH.itemName.hasFocus()){
-                if (pos > 0){
-                    //if deleted textView had focus switch it to the one before
-                    val vH2 = mRecyclerView.findViewHolderForAdapterPosition(pos -1) as ViewHolder1
-                    vH2.itemName.requestFocus()
-                }else{
-                    //if it was the last text view don't set focus and hide keyboard
-                    hideSoftKeyboard(context, vH.itemName)
+            if (pos > 0){
+                val posBefore = pos -1
+                val beforeVH = mRecyclerView.findViewHolderForAdapterPosition(posBefore) as ViewHolder1
+                //if deleted textView had focus switch it to the one before
+                if (vH.itemNameET.hasFocus()){
+                    mRecyclerView.scrollToPosition(posBefore)
+                    beforeVH.itemNameET.requestFocus()
                 }
+                if (beforeVH.itemNameET.text.isNotEmpty()) beforeVH.itemNameET.append(" $remainingText")
+                else beforeVH.itemNameET.append(remainingText)
+            }else {
+                //if it was the last text view don't set focus and hide keyboard
+                hideSoftKeyboard(context, vH.itemNameET)
             }
             
             values.removeAt(pos)
-            this.notifyItemRemoved(pos)
+            notifyItemRemoved(pos)
         }
     }
     
     companion object {
         const val LIST_OBJ_EXTRA = "extraListObj"
         const val IS_NEW_LIST_FLAG = "flagNewList"
+        
+        private const val TAG = "AddListActivity"
     }
 }

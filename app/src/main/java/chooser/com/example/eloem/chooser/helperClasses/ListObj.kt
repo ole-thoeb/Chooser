@@ -49,7 +49,7 @@ data class ListObj(val id: Int, var title: String, var items: @RawValue Array<It
     
     
     @Parcelize
-    data class Item(var name: String, val id: Int):  Parcelable
+    data class Item(var name: String, val id: Int): Parcelable
     
     companion object {
         const val MODE_RANDOM_ORDER = 1
