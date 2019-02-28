@@ -8,5 +8,9 @@
         <attr name="textColorAgainstBackground" format="reference"/>
         <attr name="textColorAgainstAccent" format="reference"/>
         <attr name="textColorSubtle" format="reference"/>
+        <attr name="buttonSelectColor" format="reference"/>
+        <attr name="backgroundColor" format="reference" />
+        <attr name="cardBoarder" format="reference"/>
+        <attr name="mCardBackgroundColor" format="reference"/>
     </declare-styleable>
 </resources>

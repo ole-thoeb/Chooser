@@ -11,9 +11,24 @@ fun hideSoftKeyboard(context: Context, view: View?){
     ipm.hideSoftInputFromWindow(view?.windowToken, 0)
 }
 
-fun randomInt(from: Int, to: Int) = Random().nextInt(to) + from
+fun View.showKeyboard() {
+    val imm = context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+    imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, InputMethodManager.HIDE_IMPLICIT_ONLY)
+}
 
-fun Context.getAttribut(resourceId: Int, resolveRef: Boolean): TypedValue{
+fun View.focusAndShowKeyboard() {
+    requestFocusFromTouch()
+    val imm = context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+    imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, InputMethodManager.HIDE_IMPLICIT_ONLY)
+}
+
+fun randomInt(from: Int, to: Int) = Random().nextInt(to - from) + from
+
+fun randomInt(range: IntRange) = Random().nextInt((range.last + 1) - range.first) + range.first
+
+fun <T> List<T>.randomEntry() = this[randomInt(0 until size)]
+
+fun Context.getAttribute(resourceId: Int, resolveRef: Boolean = true): TypedValue{
     val tv = TypedValue()
     theme.resolveAttribute(resourceId, tv, resolveRef)
     return tv

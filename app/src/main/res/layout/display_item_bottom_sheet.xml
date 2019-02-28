@@ -7,7 +7,7 @@
     android:orientation="vertical"
     android:fitsSystemWindows="true"
     app:behavior_hideable="false"
-    app:behavior_peekHeight="48dp"
+    app:behavior_peekHeight="@dimen/bottomSheetPeekHeight"
     app:layout_behavior="@string/bottom_sheet_behavior"
     android:background="?attr/darkAccentColor"
     android:elevation="6dp">
@@ -15,7 +15,7 @@
     <TextView
         android:id="@+id/listTitleTV"
         android:layout_width="match_parent"
-        android:layout_height="48dp"
+        android:layout_height="@dimen/bottomSheetPeekHeight"
         android:textSize="@dimen/mediumTextSize"
         android:textColor="?attr/textColorAgainstAccent"
         android:textStyle="bold"

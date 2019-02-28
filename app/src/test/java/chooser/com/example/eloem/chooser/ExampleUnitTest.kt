@@ -1,5 +1,6 @@
 package chooser.com.example.eloem.chooser
 
+import chooser.com.example.eloem.chooser.util.randomInt
 import org.junit.Test
 
 import org.junit.Assert.*
@@ -13,5 +14,9 @@ class ExampleUnitTest {
     @Test
     fun addition_isCorrect() {
         assertEquals(4, 2 + 2)
+    }
+    @Test
+    fun random() {
+        println(randomInt(3..5))
     }
 }
