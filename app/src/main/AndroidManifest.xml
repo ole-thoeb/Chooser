@@ -19,7 +19,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".AddListActivity"
+            android:name=".DefaultAddListActivity"
             android:screenOrientation="portrait"
             android:theme="@style/DarkAppTheme">
             <meta-data
@@ -27,7 +27,14 @@
                 android:value=".MainActivity" />
         </activity>
         <activity
-            android:name=".DisplayItemActivity"
+            android:name=".DisplayOrderChooserActivity"
+            android:theme="@style/LightAppTheme">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".MainActivity" />
+        </activity>
+        <activity
+            android:name=".DisplayPickChooserActivity"
             android:theme="@style/LightAppTheme">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"

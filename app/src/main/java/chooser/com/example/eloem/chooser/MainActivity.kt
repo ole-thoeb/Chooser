@@ -3,17 +3,14 @@ package chooser.com.example.eloem.chooser
 import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
-import android.content.SharedPreferences
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.CardView
 import android.view.*
 import android.widget.*
-import chooser.com.example.eloem.chooser.helperClasses.ListObj
-import chooser.com.example.eloem.chooser.helperClasses.database
+import chooser.com.example.eloem.chooser.helperClasses.*
 import chooser.com.example.eloem.chooser.util.*
 import kotlinx.android.synthetic.main.activity_main.*
-import org.jetbrains.anko.defaultSharedPreferences
 
 class MainActivity : AppCompatActivity() {
     
@@ -25,17 +22,18 @@ class MainActivity : AppCompatActivity() {
         
         setContentView(R.layout.activity_main)
         //registerForContextMenu(listView)
-        
+        /*database.use { dropTables(this) }
+        database.use { createTables(this) }*/
         fab.setOnClickListener {
-            val listObj = ListObj(newListId(this),
+            val id = newListId(this)
+            val listObj = OrderChooser(id,
                     "",
-                    arrayOf(ListObj.Item("", newItemId(this))),
-                    mode = ListObj.MODE_RANDOM_ORDER)
+                    mutableListOf(ChooserItem("", 0)))
             
-            val intent = Intent(this, AddListActivity::class.java)
-            intent.putExtra(AddListActivity.LIST_OBJ_EXTRA, listObj)
-            intent.putExtra(AddListActivity.IS_NEW_LIST_FLAG, true)
-            
+            val intent = Intent(this, DefaultAddListActivity::class.java).apply {
+                putExtra(DefaultAddListActivity.CHOOSER_ID_EXTRA, id)
+            }
+            insertListEntry(this, listObj)
             startActivity(intent)
         }
     }
@@ -47,7 +45,7 @@ class MainActivity : AppCompatActivity() {
         //get data from database
         val data = getAllListObj(this)
     
-        val mAdapter = MainListAdapter(this, data)
+        val mAdapter = MainListAdapter(this, data.toMutableList())
     
         listView.apply {
             adapter = mAdapter
@@ -102,7 +100,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
     
-    inner class MainListAdapter(private val context: Context, val values: MutableList<ListObj>): BaseAdapter(){
+    inner class MainListAdapter(private val context: Context, val values: MutableList<ChooserObj>): BaseAdapter(){
         
         /*class ViewHolder1(layout: View): RecyclerView.ViewHolder(layout), View.OnCreateContextMenuListener{
             val titleTV: TextView = layout.findViewById(R.id.titleTV)
@@ -141,12 +139,12 @@ class MainActivity : AppCompatActivity() {
             
             val vH = convertView?: layoutInflater.inflate(R.layout.main_activity_list_item, parent, false)
             
-            vH.findViewById<TextView>(R.id.progressTV).text = when(listObj.mode){
-                ListObj.MODE_RANDOM_ORDER -> {
+            vH.findViewById<TextView>(R.id.progressTV).text = when(listObj){
+                is OrderChooser<*> -> {
                     if (listObj.hasNoItems) resources.getString(R.string.noItem)
                     else resources.getString(R.string.progressString, listObj.currentPos + 1, listObj.items.size)
                 }
-                ListObj.MODE_SINGLE_PICK -> resources.getString(R.string.randomPick)
+                is PickChooser<*> -> resources.getString(R.string.randomPick)
                 
                 else -> resources.getString(R.string.error)
             }
@@ -155,10 +153,15 @@ class MainActivity : AppCompatActivity() {
             vH.findViewById<TextView>(R.id.currentItemTV).text = listObj.currentItem.name
 
             vH.findViewById<CardView>(R.id.card).setOnClickListener{
-                val intent = Intent(context, DisplayItemActivity::class.java)
-                intent.putExtra(DisplayItemActivity.LIST_OBJ_EXTRA, values[position])
-    
-                startActivity(intent)
+                val chooser = values[position]
+                when(chooser){
+                    is PickChooser<*> -> startActivity(Intent(context, DisplayPickChooserActivity::class.java).apply {
+                        putExtra(DisplayOrderChooserActivity.CHOOSER_ID_EXTRA, chooser.id)
+                    })
+                    is OrderChooser<*> -> startActivity(Intent(context, DisplayOrderChooserActivity::class.java).apply {
+                        putExtra(DisplayOrderChooserActivity.CHOOSER_ID_EXTRA, chooser.id)
+                    })
+                }
             }
         
             vH.findViewById<ImageButton>(R.id.menuButton).setOnClickListener { button ->
@@ -216,17 +219,21 @@ class MainActivity : AppCompatActivity() {
         
         fun editItem(pos: Int){
             if (pos < count){
-                val intent = Intent(context, AddListActivity::class.java)
-                intent.putExtra(AddListActivity.LIST_OBJ_EXTRA, values[pos])
-                intent.putExtra(AddListActivity.IS_NEW_LIST_FLAG, false)
+                val intent = Intent(context, DefaultAddListActivity::class.java).apply {
+                    putExtra(DefaultAddListActivity.CHOOSER_ID_EXTRA, values[pos].id)
+                }
                 startActivity(intent)
             }
         }
         
         fun restartList(pos: Int){
-            values[pos].restart()
-            updateListEntryComplete(context, values[pos])
-            notifyDataSetChanged()
+            val chooser = values[pos]
+            if (chooser is OrderChooser<*>){
+                chooser.restart()
+                updateJustList(context, chooser)
+                updateItems(context, chooser.items, chooser.id)
+                notifyDataSetChanged()
+            }
         }
     }
 }

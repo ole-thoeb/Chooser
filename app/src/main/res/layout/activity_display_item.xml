@@ -6,13 +6,13 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:clipToPadding="false"
-    tools:context=".DisplayItemActivity"
+    tools:context=".DisplayOrderChooserActivity"
     android:background="?attr/backgroundColor">
 
     <android.support.constraint.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context=".DisplayItemActivity">
+        tools:context=".DisplayOrderChooserActivity">
 
         <TextView
             android:id="@+id/progressTV"

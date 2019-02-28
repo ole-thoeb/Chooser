@@ -11,15 +11,16 @@ import android.view.*
 import android.widget.ImageButton
 import android.widget.LinearLayout
 import android.widget.TextView
-import chooser.com.example.eloem.chooser.helperClasses.ListObj
+import chooser.com.example.eloem.chooser.helperClasses.ChooserItem
+import chooser.com.example.eloem.chooser.helperClasses.OrderChooser
 import chooser.com.example.eloem.chooser.util.*
 import emil.beothy.widget.BetterEditText
 import kotlinx.android.synthetic.main.actionbar_layout.*
 import kotlinx.android.synthetic.main.activity_add_list.*
 
-class AddListActivity : AppCompatActivity() {
-    private var isNewList:Boolean = true
-    private lateinit var data: ListObj
+class DefaultAddListActivity<T: OrderChooser<ChooserItem>> : AppCompatActivity() {
+    
+    private lateinit var data: T
     
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(currentTheme)
@@ -33,13 +34,26 @@ class AddListActivity : AppCompatActivity() {
         supportActionBar?.setDisplayShowCustomEnabled(true)
         supportActionBar?.setCustomView(R.layout.actionbar_layout)
         
-        //TODO: get data from Intent (could crash if no extra)
-        data = intent.getParcelableExtra(LIST_OBJ_EXTRA) as ListObj
-        isNewList = intent.getBooleanExtra(IS_NEW_LIST_FLAG, true)
+        val chooserId = intent.getIntExtra(DefaultAddListActivity.CHOOSER_ID_EXTRA, -1)
+        if (chooserId == -1) finish()
+    
+        val chooser = getChooser(this, chooserId)
+        try {
+            @Suppress("UNCHECKED_CAST")
+            data = chooser as T
+        } catch (e: TypeCastException) {
+            finish()
+        }
         
         //set data to UI
         list.apply {
-            adapter = MyListAdapter(context, data.items.toMutableList())
+            val converterList = data.items.mapIndexed { index, item ->
+                ConverterChooserItem(item.name, item.originalPos, index)
+            }.toMutableList()
+            adapter = MyListAdapter(context,
+                    converterList.apply { sortBy { it.orgPos } }
+                            .map { MyListAdapter.MutableChooserItem(it.name, it.randomPos) }
+                            .toMutableList())
             layoutManager = LinearLayoutManager(context)
         }
         
@@ -51,24 +65,29 @@ class AddListActivity : AppCompatActivity() {
         hideSoftKeyboard(this, currentFocus)
         
         //update List object
-        val cleanedItems = (list.adapter as MyListAdapter).values.filter { it.name != "" }.toTypedArray()
+        val cleanedItems = (list.adapter as MyListAdapter).values
+                .filter { it.name != "" }
+                .mapIndexed { index, item -> ConverterChooserItem(item.name, index, item.randomPos) }
+                .sortedBy { it.randomPos }
         val title = actionBarText.text.toString()
         //when nothing was filled in -> safe nothing | discard list
         if (cleanedItems.isEmpty() && title == "") return
         
-        data.items = cleanedItems
+        data.items.apply {
+            clear()
+            addAll(cleanedItems.map { ChooserItem(it.name, it.orgPos) })
+        }
         data.title = title
         
         //write/update data to database
-        if (isNewList)insertListEntry(this, data)
-        else updateListEntryComplete(this, data)
+        updateListEntryComplete(this, data)
     }
     
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.menu_add_list, menu)
         return true
     }
-    
+    /*
     override fun onPrepareOptionsMenu(menu: Menu?): Boolean {
         super.onPrepareOptionsMenu(menu)
         menu?.findItem(R.id.mode)?.title = when (data.mode){
@@ -78,22 +97,21 @@ class AddListActivity : AppCompatActivity() {
             else -> resources.getString(R.string.error)
         }
         return true
-    }
+    }*/
     
     override fun onOptionsItemSelected(item: MenuItem?): Boolean = when (item?.itemId){
         R.id.restart -> {
-            val builder = AlertDialog.Builder(this)
+            /*val builder = AlertDialog.Builder(this)
             builder.setMessage(R.string.dialogRestartListMessage)
                     .setNegativeButton(R.string.dialogNegative) {_, _ ->
                         //nothing
                     }
                     .setPositiveButton(R.string.dialogPositive) { _, _ ->
                         data.restart()
-    
-                        if (isNewList) insertListEntry(this, data)
-                        else updateListEntryComplete(this, data)
+                        
+                        updateListEntryComplete(this, data)
                     }
-                    .show()
+                    .show()*/
             true
         }
         R.id.delete -> {
@@ -111,7 +129,7 @@ class AddListActivity : AppCompatActivity() {
             true
         }
         R.id.mode -> {
-            AlertDialog.Builder(this)
+            /*AlertDialog.Builder(this)
                     .setTitle(R.string.chooseMode)
                     .setItems(R.array.modeArray){ _, which ->
                         data.mode = when(which){
@@ -121,7 +139,7 @@ class AddListActivity : AppCompatActivity() {
                             else -> ListObj.MODE_RANDOM_ORDER
                         }
                     }
-                    .show()
+                    .show()*/
             true
         }
         else -> super.onOptionsItemSelected(item)
@@ -132,8 +150,12 @@ class AddListActivity : AppCompatActivity() {
         NavUtils.navigateUpFromSameTask(this)
     }
     
-    class MyListAdapter(private val context: Context, var values: MutableList<ListObj.Item>):
+    data class ConverterChooserItem(val name: String, val orgPos: Int, val randomPos: Int)
+    
+    class MyListAdapter(private val context: Context, var values: MutableList<MutableChooserItem>):
             RecyclerView.Adapter<RecyclerView.ViewHolder>(){
+        
+        data class MutableChooserItem(var name: String, var randomPos: Int)
         
         private lateinit var mRecyclerView: RecyclerView
         
@@ -172,8 +194,7 @@ class AddListActivity : AppCompatActivity() {
                             if (subStrings.size == 1) addNewItem(pos + 1, subStrings.first())
                             else {
                                 subStrings.forEachIndexed { index, s ->
-                                    values.add(pos + index + 1,
-                                            ListObj.Item(s, newItemId(context)))
+                                    values.add(pos + index + 1, MutableChooserItem(s, values.size))
                                 }
                                 val lastPos = pos + subStrings.size + 1
                                 notifyItemRangeInserted(pos + 1, subStrings.size)
@@ -227,7 +248,7 @@ class AddListActivity : AppCompatActivity() {
             else 1
         
         private fun addNewItem(pos: Int, startString: String = ""){
-            values.add(pos, ListObj.Item(startString, newItemId(context)))
+            values.add(pos, MutableChooserItem(startString, values.size))
             notifyItemInserted(pos)
             mRecyclerView.scrollToPosition(pos)
         }
@@ -239,12 +260,15 @@ class AddListActivity : AppCompatActivity() {
                 val posBefore = pos -1
                 val beforeVH = mRecyclerView.findViewHolderForAdapterPosition(posBefore) as ViewHolder1
                 //if deleted textView had focus switch it to the one before
+                if (beforeVH.itemNameET.text.isNotEmpty() && remainingText != "")
+                    beforeVH.itemNameET.append(" $remainingText")
+                else
+                    beforeVH.itemNameET.append(remainingText)
                 if (vH.itemNameET.hasFocus()){
                     mRecyclerView.scrollToPosition(posBefore)
                     beforeVH.itemNameET.requestFocus()
+                    beforeVH.itemNameET.setSelection(beforeVH.itemNameET.text.length - remainingText.length)
                 }
-                if (beforeVH.itemNameET.text.isNotEmpty()) beforeVH.itemNameET.append(" $remainingText")
-                else beforeVH.itemNameET.append(remainingText)
             }else {
                 //if it was the last text view don't set focus and hide keyboard
                 hideSoftKeyboard(context, vH.itemNameET)
@@ -256,9 +280,8 @@ class AddListActivity : AppCompatActivity() {
     }
     
     companion object {
-        const val LIST_OBJ_EXTRA = "extraListObj"
-        const val IS_NEW_LIST_FLAG = "flagNewList"
+        const val CHOOSER_ID_EXTRA = "extraChooserId"
         
-        private const val TAG = "AddListActivity"
+        private const val TAG = "DefaultAddListActivity"
     }
 }
