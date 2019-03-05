@@ -61,12 +61,7 @@ private fun insertJustChooser(context: Context, listObj: ChooserObj) {
                 ListContract.ListEntry.COLUMN_NAME_TYPE to typeFlag)
     }
     
-    when(listObj){
-        is WeightedChooser<*> -> insertChooser(context, listObj, WeightedChooser.PARS_TYPE)
-        is PickChooser<*> -> insertChooser(context, listObj, PickChooser.PARS_TYPE)
-        is OrderChooser<*> -> insertChooser(context, listObj, OrderChooser.PARS_TYPE)
-        else -> throw TypeCastException("Chooser to insert has unknown type: ${listObj::javaClass}")
-    }
+    if (listObj is OrderChooser<*>) insertChooser(context, listObj, listObj.parsType())
 }
 //newly adds all items of the given list
 fun insertItems(context: Context, id: Int, items: List<ChooserItem>) = context.database.use {
@@ -120,7 +115,8 @@ fun updateJustList(context: Context, listObj: ChooserObj): Unit = context.databa
     when(listObj) {
         is OrderChooser<*> -> update(ListContract.ListEntry.TABLE_NAME,
                 ListContract.ListEntry.COLUMN_NAME_NAME to listObj.title,
-                ListContract.ListEntry.COLUMN_NAME_CURRENT_POS to listObj.currentPos)
+                ListContract.ListEntry.COLUMN_NAME_CURRENT_POS to listObj.currentPos,
+                ListContract.ListEntry.COLUMN_NAME_TYPE to listObj.parsType())
                 .whereArgs("${ListContract.ListEntry.COLUMN_NAME_ID} = {id}", "id" to listObj.id)
                 .exec()
     }

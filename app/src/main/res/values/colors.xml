@@ -10,6 +10,11 @@
     <color name="buttonSelectColorLight">#4DA0A0A0</color>
     <color name="buttonSelectColorDark">#4DD3D3D3</color>
 
+    <color name="itemSelectColorLight">#C7C7C7</color>
+    <color name="itemSelectColorDark">@color/colorAccentDarkTheme</color>
+
     <color name="materialBackgroundDark">#FF303030</color>
     <color name="materialBackgroundLight">#FFFAFAFA</color>
+
+    <color name="ic_launcher_background">#212121</color>
 </resources>

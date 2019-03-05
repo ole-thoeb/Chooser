@@ -15,6 +15,7 @@ import android.view.ViewGroup
 import android.widget.BaseAdapter
 import android.widget.TextView
 import chooser.com.example.eloem.chooser.helperClasses.OrderChooser
+import chooser.com.example.eloem.chooser.helperClasses.parsType
 import chooser.com.example.eloem.chooser.util.*
 import kotlinx.android.synthetic.main.activity_display_item.*
 import kotlinx.android.synthetic.main.display_item_bottom_sheet.*
@@ -121,6 +122,7 @@ open class DisplayOrderChooserActivity<T: OrderChooser<*>> : AppCompatActivity()
     open fun editChooser(){
         val intent = Intent(this, DefaultAddListActivity::class.java).apply {
             putExtra(DefaultAddListActivity.CHOOSER_ID_EXTRA, this@DisplayOrderChooserActivity.data.id)
+            putExtra(DefaultAddListActivity.CHOOSER_TYPE_EXTRA, this@DisplayOrderChooserActivity.data.parsType())
         }
         startActivity(intent)
     }

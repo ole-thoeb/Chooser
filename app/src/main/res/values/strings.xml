@@ -17,10 +17,17 @@
 
     <string name="emptyListMessage">Du hast noch keine Liste. Um eine neue Liste hinzuzufügen drücke unten auf das +</string>
 
+    <plurals name="titleCAB">
+        <item quantity="one">%1$d Item</item>
+        <item quantity="other">%1$d Items</item>
+    </plurals>
     <string name="noItem">Kein Item</string>
 
+    <string name="mode">Modus</string>
     <string name="randomPick">Zufällige Wahl</string>
     <string name="randomOrder">Zufällige Reihenfolge</string>
+    <string name="randomWeightedPick">Zufällige gewichtete Wahl</string>
+
     <string name="modeRandomOrder">Modus: z Reihenfolge</string>
     <string name="modeRandomPick">Modus: z Wahl</string>
 
@@ -29,6 +36,7 @@
     <string-array name="modeArray">
         <item>@string/randomPick</item>
         <item>@string/randomOrder</item>
+        <item>@string/randomWeightedPick</item>
     </string-array>
 
     <string name="error">ERROR</string>
@@ -61,5 +69,6 @@
         <item>1</item>
         <item>2</item>
     </string-array>
+    <string name="title_activity_test">TestActivity</string>
 
 </resources>

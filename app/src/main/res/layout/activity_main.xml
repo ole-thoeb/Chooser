@@ -9,7 +9,9 @@
         android:id="@+id/listView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:paddingTop="@dimen/standardPadding"/>
+        android:paddingTop="@dimen/standardPadding"
+        android:divider="@drawable/transparent"
+        android:listSelector="@android:color/transparent"/>
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fab"

@@ -43,7 +43,7 @@
         <activity
             android:name=".SettingsActivity"
             android:label="@string/title_activity_settings"
-            android:theme="@style/LightAppTheme.ColoredActionBar"/>
+            android:theme="@style/LightAppTheme.ColoredActionBar" />
     </application>
 
 </manifest>

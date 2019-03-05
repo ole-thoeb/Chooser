@@ -33,3 +33,18 @@ fun Context.getAttribute(resourceId: Int, resolveRef: Boolean = true): TypedValu
     theme.resolveAttribute(resourceId, tv, resolveRef)
     return tv
 }
+
+inline fun View.setNoDoubleClickListener(timeInterval: Long = 500, crossinline action: (View) -> Unit){
+    setOnClickListener(makeNoDoubleActivation(timeInterval, action))
+}
+
+inline fun <T> makeNoDoubleActivation(coolDown: Long, crossinline action: (T) -> Unit): (T) -> Unit {
+    var lastClick = 0L
+    return {
+        val currTime = System.currentTimeMillis()
+        if (lastClick + coolDown < currTime) {
+            lastClick = currTime
+            action(it)
+        }
+    }
+}

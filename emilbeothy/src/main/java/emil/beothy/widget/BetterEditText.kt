@@ -26,7 +26,7 @@ class BetterEditText @JvmOverloads constructor(context: Context, attrs: Attribut
             override fun afterTextChanged(editable: Editable?) {
                 if (editable != null && editable.isNotEmpty()) {
                     val string = editable.toString()
-                    Log.d(TAG, "afterText editableStr: $string")
+                    //Log.d(TAG, "afterText editableStr: $string")
                     val list = string.split('\n')
                     if (list.size > 1) {
                         editable.delete(list[0].length, editable.length)

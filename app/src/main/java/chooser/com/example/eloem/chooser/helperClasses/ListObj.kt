@@ -4,8 +4,8 @@ import android.os.Parcelable
 import chooser.com.example.eloem.chooser.util.randomInt
 import kotlinx.android.parcel.Parcelize
 import kotlinx.android.parcel.RawValue
-import org.jetbrains.anko.db.SqlType
 import java.lang.Error
+import java.util.*
 
 /*@Parcelize
 data class ListObj(val id: Int, var title: String, var items: @RawValue Array<Item>, var currentPos: Int = 0, var mode: Int): Parcelable {
@@ -61,6 +61,7 @@ data class ListObj(val id: Int, var title: String, var items: @RawValue Array<It
 interface ChooserObj: Parcelable {
     val id: Int
     var title: String
+    val items: Collection<ChooserItem>
     val hasNextItem: Boolean
     fun nextItem(): ChooserItem
     val currentItem: ChooserItem
@@ -73,11 +74,13 @@ open class ChooserItem(var name: String, var originalPos: Int): Parcelable {
         require(originalPos >= 0) { "originalPos must be > 0 but is $originalPos" }
     }
 }
+private const val NO_ITEM_NAME = "No Item #ERROR"
+private object NO_CHOOSER_ITEM: ChooserItem(NO_ITEM_NAME, 0)
 
 @Parcelize
 open class OrderChooser<T: ChooserItem>(override val id: Int,
                                         override var title: String,
-                                        val items: @RawValue MutableList<T>,
+                                        override val items: @RawValue MutableList<T>,
                                         var currentPos: Int = 0): ChooserObj {
     
     override val hasNextItem: Boolean get() =  currentPos < items.size - 1
@@ -86,7 +89,9 @@ open class OrderChooser<T: ChooserItem>(override val id: Int,
     
     override val hasNoItems: Boolean get() = items.isEmpty()
     
-    override val currentItem: ChooserItem get() = items[currentPos]
+    override val currentItem: ChooserItem get() =
+        if (hasNoItems) NO_CHOOSER_ITEM
+        else items[currentPos]
     
     open fun restart(){
         currentPos = 0
@@ -117,16 +122,22 @@ open class PickChooser<T: ChooserItem>(id: Int, title: String, items: MutableLis
     }
 }
 
-open class WeightedChooserItem(name: String, originalPos: Int, val weight: Int): ChooserItem(name, originalPos) {
+open class WeightedChooserItem(name: String, originalPos: Int, val weight: Int = 1): ChooserItem(name, originalPos) {
     init {
         require(weight > 0) { "weight must be > 0 but is $weight" }
     }
 }
 
+fun ChooserItem.toWeightedChooserItem(): WeightedChooserItem =
+        if (this is WeightedChooserItem) this
+        else WeightedChooserItem(name, originalPos)
+
+private object NO_CHOOSER_ITEM_WEIGHTED: WeightedChooserItem(NO_ITEM_NAME, 0, 1)
+
 open class WeightedChooser<T: WeightedChooserItem>(id: Int, title: String, items: MutableList<T>, curPos: Int = 0):
         PickChooser<T>(id, title, items, curPos) {
     
-    override fun nextItem(): ChooserItem {
+    override fun nextItem(): WeightedChooserItem {
         val weightSum = items.sumBy { it.weight }
         var weightedPos = randomInt(0 until weightSum)
         items.forEachIndexed { index, item ->
@@ -140,7 +151,41 @@ open class WeightedChooser<T: WeightedChooserItem>(id: Int, title: String, items
         throw Error("could not determine next Item")
     }
     
+    override val currentItem: WeightedChooserItem get() =
+        if (hasNoItems) NO_CHOOSER_ITEM_WEIGHTED
+        else items[currentPos]
+    
     companion object {
         const val PARS_TYPE = "WeightedChooser"
     }
+}
+
+/*fun <T: ChooserItem> OrderChooser<T>.toPickChooser(): PickChooser<T>{
+    return PickChooser(id, title, items, currentPos)
+}
+
+fun <T: ChooserItem> PickChooser<T>.toOrderChooser(): OrderChooser<T>{
+    return OrderChooser(id, title, items, currentPos)
+}*/
+
+fun ChooserObj.toOrderChooser(): OrderChooser<ChooserItem>{
+    this as OrderChooser<ChooserItem>
+    return OrderChooser(id, title, items, currentPos)
+}
+
+fun ChooserObj.toPickChooser(): PickChooser<ChooserItem>{
+    this as OrderChooser<ChooserItem>
+    return PickChooser(id, title, items, currentPos)
+}
+
+fun ChooserObj.toWeigtedChooser(): WeightedChooser<WeightedChooserItem>{
+    this as OrderChooser<ChooserItem>
+    return WeightedChooser(id, title, items.map { it.toWeightedChooserItem() }.toMutableList(), currentPos)
+}
+
+fun ChooserObj.parsType(): String = when(this){
+    is WeightedChooser<*> -> WeightedChooser.PARS_TYPE
+    is PickChooser<*> -> PickChooser.PARS_TYPE
+    is OrderChooser<*> -> OrderChooser.PARS_TYPE
+    else -> throw TypeCastException("Can't determine type of Chooser: $this")
 }

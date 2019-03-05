@@ -7,12 +7,9 @@
         android:title="@string/delete"
         app:showAsAction="never"/>
 
-    <item android:id="@+id/restart"
-        android:title="@string/restart"
-        app:showAsAction="never"/>
-
     <item android:id="@+id/mode"
-        android:title="@string/modeRandomOrder"
-        app:showAsAction="never"/>
+        android:title="@string/mode"
+        app:showAsAction="ifRoom"
+        android:icon="@drawable/ic_order"/>
 
 </menu>

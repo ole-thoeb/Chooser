@@ -3,7 +3,6 @@
     <declare-styleable name="customAttrs">
         <attr name="generalIconColor" format="reference"/>
         <attr name="fabIconColor" format="reference"/>
-        <attr name="accentColor" format="reference"/>
         <attr name="darkAccentColor" format="reference"/>
         <attr name="textColorAgainstBackground" format="reference"/>
         <attr name="textColorAgainstAccent" format="reference"/>
@@ -12,5 +11,6 @@
         <attr name="backgroundColor" format="reference" />
         <attr name="cardBoarder" format="reference"/>
         <attr name="mCardBackgroundColor" format="reference"/>
+        <attr name="selectedItemBackground" format="reference"/>
     </declare-styleable>
 </resources>
