@@ -41,6 +41,10 @@
 
     <string name="error">ERROR</string>
 
+    <string name="messageSafedChooser">Chooser gespeichert</string>
+    <string name="messageWeightGreaterZero">Die Gewichtung muss mindestens 1 sein</string>
+    <string name="dialogTitleSetWeight">Gewichtung</string>
+
     <string name="dialogNoMoreItemsMessage">Du hast das Ende der Liste ereicht</string>
     <string name="dialogNoMoreItemsPositive">Neustarten</string>
     <string name="dialogNoMoreItemsNegative">Löschen</string>

@@ -1,5 +1,6 @@
 package chooser.com.example.eloem.chooser
 
+import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.app.Fragment
 import android.support.v7.app.AppCompatActivity
@@ -10,11 +11,13 @@ import android.support.v7.widget.RecyclerView
 import android.util.Log
 import android.view.*
 import android.widget.ImageButton
+import android.widget.Toast
 import chooser.com.example.eloem.chooser.helperClasses.*
 import chooser.com.example.eloem.chooser.util.*
 import emil.beothy.widget.BetterEditText
 import kotlinx.android.synthetic.main.actionbar_layout.*
 import kotlinx.android.synthetic.main.fragment_add_order_chooser.*
+import kotlinx.android.synthetic.main.weight_dialog.view.*
 import java.util.*
 
 open class DefaultAddListActivity : AppCompatActivity() {
@@ -51,7 +54,7 @@ open class DefaultAddListActivity : AppCompatActivity() {
         val fragment = when (type) {
             OrderChooser.PARS_TYPE -> AddOrderChooserFragment()
             PickChooser.PARS_TYPE -> AddPickChooserFragment()
-            WeightedChooser.PARS_TYPE -> throw NotImplementedError()
+            WeightedChooser.PARS_TYPE -> AddWeightedChooserFragment()
             else -> throw UnknownFormatFlagsException("Unknown Flag for chooser type: $type")
         }
         fragment.arguments = Bundle().apply {
@@ -128,7 +131,10 @@ open class DefaultAddListActivity : AppCompatActivity() {
     
     override fun onPause() {
         super.onPause()
-        currentFragment?.saveChooser()
+        currentFragment?.let {
+            it.saveChooser()
+            Toast.makeText(this, R.string.messageSafedChooser, Toast.LENGTH_SHORT).show()
+        }
     }
     
     override fun onBackPressed() {
@@ -144,133 +150,6 @@ open class DefaultAddListActivity : AppCompatActivity() {
     data class ConverterChooserItem(val name: String, val orgPos: Int, val randomPos: Int)
     
     data class MutableChooserItem(var name: String, var randomPos: Int)
-    
-    /*class MyListAdapter(private val context: Context, var values: MutableList<MutableChooserItem>):
-            RecyclerView.Adapter<RecyclerView.ViewHolder>(){
-        
-        
-        private lateinit var mRecyclerView: RecyclerView
-        
-        class ViewHolder1(layout: View): RecyclerView.ViewHolder(layout){
-            val itemNameET: BetterEditText = layout.findViewById(R.id.itemName)
-            val deleteButton: ImageButton = layout.findViewById(R.id.deleteButton)
-        }
-        
-        class ViewHolder2(layout: View): RecyclerView.ViewHolder(layout){
-            val linLayout: LinearLayout = layout.findViewById(R.id.linLayout)
-        }
-        
-        override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
-            mRecyclerView = recyclerView
-            super.onAttachedToRecyclerView(recyclerView)
-        }
-        
-        override fun getItemCount(): Int {
-            return values.size + 1
-        }
-        
-        override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-            when (holder.itemViewType){
-                0 -> {
-                    val realHolder = holder as ViewHolder1
-                    with(realHolder.itemNameET) {
-                        setText(values[position].name, TextView.BufferType.EDITABLE)
-                        onTextChangeListener = { charSequence, betterEditText ->
-                            val pos = realHolder.adapterPosition
-                            if (pos < values.size) {
-                                values[pos].name = charSequence.toString()
-                            }
-                        }
-                        onLineBreakListener = { subStrings, view ->
-                            val pos = realHolder.adapterPosition
-                            if (subStrings.size == 1) addNewItem(pos + 1, subStrings.first())
-                            else {
-                                subStrings.forEachIndexed { index, s ->
-                                    values.add(pos + index + 1, MutableChooserItem(s, values.size))
-                                }
-                                val lastPos = pos + subStrings.size + 1
-                                notifyItemRangeInserted(pos + 1, subStrings.size)
-                                mRecyclerView.scrollToPosition(lastPos)
-                            }
-                        }
-                        onDelAtStartListener = { restString, view ->
-                            val pos = realHolder.adapterPosition
-                            removeItem(pos, restString)
-                        }
-                        onFocusChangeListener = View.OnFocusChangeListener { tv, hasFocus ->
-                            with(realHolder.deleteButton){
-                                if (hasFocus){
-                                    setImageDrawable(resources.getDrawable(R.drawable.ic_clear, context.theme))
-                                    isClickable = true
-                                }else {
-                                    setImageDrawable(resources.getDrawable(R.drawable.transparent, context.theme))
-                                    isClickable = false
-                                }
-                            }
-                        }
-                        
-                        //set Focus to newly added textViews and show keyboard
-                        focusAndShowKeyboard()
-                        setSelection(values[position].name.length)
-                    }
-    
-                    realHolder.deleteButton.setOnClickListener { removeItem(realHolder.adapterPosition) }
-                }
-                1 -> {
-                    val realHolder = holder as ViewHolder2
-                    realHolder.linLayout.setOnClickListener { addNewItem(values.size) }
-                }
-            }
-        }
-        
-        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
-            return when(viewType){
-                0 ->{
-                    val layout = LayoutInflater.from(parent.context).inflate(R.layout.item_list_row, parent,false)
-                    ViewHolder1(layout)
-                }
-                else ->{
-                    val layout = LayoutInflater.from(parent.context).inflate(R.layout.new_item_row, parent,false)
-                    ViewHolder2(layout)
-                }
-            }
-        }
-        
-        override fun getItemViewType(position: Int) =
-                if (position < values.size) 0
-                else 1
-        
-        private fun addNewItem(pos: Int, startString: String = ""){
-            values.add(pos, MutableChooserItem(startString, values.size))
-            notifyItemInserted(pos)
-            mRecyclerView.scrollToPosition(pos)
-        }
-        
-        private fun removeItem(pos: Int, remainingText: String = ""){
-            val gvH = mRecyclerView.findViewHolderForAdapterPosition(pos) ?: return
-            val vH =  gvH as ViewHolder1
-            if (pos > 0){
-                val posBefore = pos -1
-                val beforeVH = mRecyclerView.findViewHolderForAdapterPosition(posBefore) as ViewHolder1
-                //if deleted textView had focus switch it to the one before
-                if (beforeVH.itemNameET.text.isNotEmpty() && remainingText != "")
-                    beforeVH.itemNameET.append(" $remainingText")
-                else
-                    beforeVH.itemNameET.append(remainingText)
-                if (vH.itemNameET.hasFocus()){
-                    mRecyclerView.scrollToPosition(posBefore)
-                    beforeVH.itemNameET.requestFocus()
-                    beforeVH.itemNameET.setSelection(beforeVH.itemNameET.text.length - remainingText.length)
-                }
-            }else {
-                //if it was the last text view don't set focus and hide keyboard
-                hideSoftKeyboard(context, vH.itemNameET)
-            }
-            
-            values.removeAt(pos)
-            notifyItemRemoved(pos)
-        }
-    }*/
     
     abstract class AddChooserFragment: Fragment(){
         abstract fun saveChooser()
@@ -358,7 +237,7 @@ open class DefaultAddListActivity : AppCompatActivity() {
                 VIEW_TYPE_EDIT_ROW -> EditViewHolder(
                         LayoutInflater
                                 .from(context)
-                                .inflate(R.layout.item_list_row, parent,false)
+                                .inflate(R.layout.edit_item_row, parent,false)
                 )
                 1 -> FootViewHolder(
                         LayoutInflater
@@ -391,10 +270,203 @@ open class DefaultAddListActivity : AppCompatActivity() {
         }
     }
     
-    class AddPickChooserFragment: AddOrderChooserFragment(){
+    open class AddPickChooserFragment: AddOrderChooserFragment(){
         override val chooser: PickChooser<ChooserItem> by lazy {
             val chooserId = arguments.getInt(CHOOSER_ID_EXTRA)
             getChooser(context, chooserId).toPickChooser()
+        }
+    }
+    
+    
+    data class ConverterWeightedChooserItem(val name: String, val orgPos: Int, val randomPos: Int, val weight: Int)
+    
+    data class MutableWeightedChooserItem(var name: String, var randomPos: Int, var weight: Int)
+    
+    open class AddWeightedChooserFragment: AddChooserFragment(){
+    
+        open val chooser: WeightedChooser<WeightedChooserItem> by lazy {
+            val chooserId = arguments.getInt(CHOOSER_ID_EXTRA)
+            getChooser(context, chooserId).toWeightedChooser()
+        }
+    
+        private val parentActivity: DefaultAddListActivity by lazy { activity as DefaultAddListActivity }
+    
+        override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+            return inflater.inflate(R.layout.fragment_add_order_chooser, container, false)
+        }
+    
+        override fun onActivityCreated(savedInstanceState: Bundle?) {
+            super.onActivityCreated(savedInstanceState)
+        
+            //set data to UI
+            list.apply {
+                val converterList = chooser.items.mapIndexed { index, item ->
+                    ConverterWeightedChooserItem(item.name, item.originalPos, index, item.weight)
+                }.toMutableList()
+                adapter = WeightAdapter(converterList.apply { sortBy { it.orgPos } }
+                        .map { MutableWeightedChooserItem(it.name, it.randomPos, it.weight) }
+                        .toMutableList())
+                layoutManager = LinearLayoutManager(context)
+            }
+        
+            parentActivity.chooserTitle = chooser.title
+        }
+    
+        override fun saveChooser() {
+            Log.d(TAG, "on Pause called. Type ${chooser::class}")
+            hideSoftKeyboard(context, view.findFocus())
+        
+            //update List object
+            val cleanedItems = (list.adapter as WeightAdapter).values
+                    .filter { it.name != "" }
+                    .mapIndexed { index, item ->
+                        ConverterWeightedChooserItem(item.name, index, item.randomPos, item.weight)
+                    }
+                    .sortedBy { it.randomPos }
+            val title = parentActivity.chooserTitle
+            //when nothing was filled in -> discard list
+            if (cleanedItems.isEmpty() && title == "") {
+                deleteListEntry(context, chooser.id)
+                return
+            }
+        
+            chooser.items.apply {
+                clear()
+                addAll(cleanedItems.map { WeightedChooserItem(it.name, it.orgPos, it.weight) })
+            }
+            chooser.title = title
+        
+            //write/update data to database
+            updateListEntryComplete(context, chooser)
+        }
+        
+        open class WeightAdapter(values: MutableList<MutableWeightedChooserItem>):
+                EditListAdapter<MutableWeightedChooserItem>(values){
+            
+            private var maxWeight: Int = values.maxBy { it.weight }?.weight ?: 1
+            
+            class EditViewHolder(layout: View): EditRowVH(layout){
+                override val itemNameET: BetterEditText = layout.findViewById(R.id.itemName)
+                override val deleteButton: ImageButton = layout.findViewById(R.id.deleteButton)
+                val weightButton: ImageButton = layout.findViewById(R.id.weightButton)
+            }
+            
+            class FootViewHolder(layout: View): RecyclerView.ViewHolder(layout){
+                val root: ViewGroup = layout.findViewById(R.id.linLayout)
+            }
+    
+            override fun onAttachedToRecyclerView(rV: RecyclerView) {
+                super.onAttachedToRecyclerView(rV)
+                onRemoveItemListener = { item, pos ->
+                    if (item.weight == maxWeight){
+                        maxWeight = values.maxBy { it.weight }?.weight ?: 1
+                        updateProgressPercent()
+                    }
+                }
+            }
+            
+            override fun writeEditContent(pos: Int, content: String) {
+                values[pos].name = content
+            }
+    
+            override fun readEditContent(pos: Int): String = values[pos].name
+    
+            override fun newItem(pos: Int, s: String): MutableWeightedChooserItem =
+                    MutableWeightedChooserItem(s, values.size, 1)
+    
+            override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder
+                    = when(viewType){
+                VIEW_TYPE_EDIT_ROW -> EditViewHolder(
+                        LayoutInflater
+                                .from(context)
+                                .inflate(R.layout.edit_weighted_item_row, parent,false)
+                )
+                1 -> FootViewHolder(
+                        LayoutInflater
+                                .from(context)
+                                .inflate(R.layout.new_item_row, parent,false)
+                )
+                else -> FootViewHolder(
+                        LayoutInflater
+                                .from(context)
+                                .inflate(R.layout.new_item_row, parent,false)
+                )
+            }
+            
+            override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
+                when(holder.itemViewType) {
+                    1 -> {
+                        (holder as FootViewHolder).apply{
+                            root.setOnClickListener { addNewItem(values.size) }
+                        }
+                    }
+                    VIEW_TYPE_EDIT_ROW -> {
+                        (holder as EditViewHolder).apply {
+                            val animDraw = WeightProgressDrawable(
+                                    context.getAttribute(R.attr.colorAccent, true).data,
+                                    context.getAttribute(R.attr.generalIconColor, true).data)
+                                    .apply {
+                                    
+                                progressPercent = (values[position].weight / maxWeight.toFloat()) * 100
+                            }
+                            weightButton.setImageDrawable(animDraw)
+                            weightButton.setOnClickListener {
+                                val pos = holder.adapterPosition
+                                
+                                @SuppressLint("InflateParams")
+                                val custView = LayoutInflater
+                                        .from(context)
+                                        .inflate(R.layout.weight_dialog, null, false).apply {
+                                            val sString = values[pos].weight.toString()
+                                            weightET.setText(sString)
+                                            weightET.setSelection(sString.length)
+                                        }
+                                
+                                AlertDialog.Builder(context)
+                                        .setTitle("Test")
+                                        .setView(custView)
+                                        .setPositiveButton(R.string.dialogPositive) { _, _ ->
+                                            val newWeight = custView.weightET.text.toString().toInt()
+                                            if (newWeight < 1) {
+                                                Toast.makeText(context,
+                                                        R.string.messageWeightGreaterZero,
+                                                        Toast.LENGTH_SHORT)
+                                                        .show()
+                                                return@setPositiveButton
+                                            }
+                                            values[pos].weight = newWeight
+                                            
+                                            val newMax = values.maxBy { it.weight }?.weight ?: 1
+                                            if (newMax != maxWeight){
+                                                maxWeight = newWeight
+                                                updateProgressPercent()
+                                            }else animDraw.progressPercent = (newWeight / maxWeight.toFloat()) * 100
+                                        }
+                                        .setNegativeButton(R.string.dialogNegative) { _, _ -> }
+                                        .show()
+                                
+                                //custView.weightET.focusAndShowKeyboard()
+                            }
+                        }
+                    }
+                }
+                super.onBindViewHolder(holder, position)
+            }
+    
+            override fun getItemViewType(position: Int): Int = when(position){
+                values.size -> 1
+                else -> VIEW_TYPE_EDIT_ROW
+            }
+    
+            override fun getItemCount(): Int = values.size + 1
+            
+            private fun updateProgressPercent(){
+                for (pos in 0 until itemCount - 1) {
+                    val vH = recyclerView.findViewHolderForAdapterPosition(pos) as EditViewHolder
+                    (vH.weightButton.drawable as WeightProgressDrawable).progressPercent =
+                            (values[pos].weight / maxWeight.toFloat()) * 100
+                }
+            }
         }
     }
     

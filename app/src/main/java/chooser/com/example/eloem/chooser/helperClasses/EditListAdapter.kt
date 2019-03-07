@@ -14,10 +14,20 @@ import emil.beothy.widget.BetterEditText
 abstract class EditListAdapter<T>(val values: MutableList<T>):
         RecyclerView.Adapter<RecyclerView.ViewHolder>(){
     
-    private lateinit var recyclerView: RecyclerView
+    lateinit var recyclerView: RecyclerView
     val context: Context by lazy { recyclerView.context }
     
     private var lastInsertedPos: Int? = null
+    
+    /**
+     * called after item was inserted to underling list.
+     * parameters are added item and the position it was added*/
+    var onAddItemListener: ((T, Int) -> Unit)? = null
+    
+    /**
+     * called after item was removed to underling list.
+     * parameters are removed item and the position it was removed*/
+    var onRemoveItemListener: ((T, Int) -> Unit)? = null
     
     abstract class EditRowVH(layout: View): RecyclerView.ViewHolder(layout){
         abstract val itemNameET: BetterEditText
@@ -60,10 +70,10 @@ abstract class EditListAdapter<T>(val values: MutableList<T>):
                 onFocusChangeListener = View.OnFocusChangeListener { tv, hasFocus ->
                     with(realHolder.deleteButton) {
                         if (hasFocus) {
-                            setImageDrawable(resources.getDrawable(R.drawable.ic_clear, context.theme))
+                            visibility = View.VISIBLE
                             isClickable = true
                         } else {
-                            setImageDrawable(resources.getDrawable(R.drawable.transparent, context.theme))
+                            visibility = View.INVISIBLE
                             isClickable = false
                         }
                     }
@@ -90,7 +100,9 @@ abstract class EditListAdapter<T>(val values: MutableList<T>):
     
     fun addNewItem(pos: Int, startString: String = ""){
         lastInsertedPos = pos
-        values.add(pos, newItem(pos, startString))
+        val newItem = newItem(pos, startString)
+        values.add(pos, newItem)
+        onAddItemListener?.invoke(newItem, pos)
         notifyItemInserted(pos)
         recyclerView.scrollToPosition(pos)
     }
@@ -115,8 +127,9 @@ abstract class EditListAdapter<T>(val values: MutableList<T>):
             //if it was the last text view don't set focus and hide keyboard
             hideSoftKeyboard(context, vH.itemNameET)
         }
-        
+        val removedItem = values[pos]
         values.removeAt(pos)
+        onRemoveItemListener?.invoke(removedItem, pos)
         notifyItemRemoved(pos)
     }
     

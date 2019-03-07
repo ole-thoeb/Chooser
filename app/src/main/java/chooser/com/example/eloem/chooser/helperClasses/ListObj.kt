@@ -1,6 +1,7 @@
 package chooser.com.example.eloem.chooser.helperClasses
 
 import android.os.Parcelable
+import android.util.Log
 import chooser.com.example.eloem.chooser.util.randomInt
 import kotlinx.android.parcel.Parcelize
 import kotlinx.android.parcel.RawValue
@@ -139,7 +140,8 @@ open class WeightedChooser<T: WeightedChooserItem>(id: Int, title: String, items
     
     override fun nextItem(): WeightedChooserItem {
         val weightSum = items.sumBy { it.weight }
-        var weightedPos = randomInt(0 until weightSum)
+        var weightedPos = randomInt(1..weightSum)
+        Log.d("WeightedChooser", "random weighted position = $weightedPos")
         items.forEachIndexed { index, item ->
             weightedPos -= item.weight
             if (weightedPos <= 0){
@@ -178,7 +180,7 @@ fun ChooserObj.toPickChooser(): PickChooser<ChooserItem>{
     return PickChooser(id, title, items, currentPos)
 }
 
-fun ChooserObj.toWeigtedChooser(): WeightedChooser<WeightedChooserItem>{
+fun ChooserObj.toWeightedChooser(): WeightedChooser<WeightedChooserItem>{
     this as OrderChooser<ChooserItem>
     return WeightedChooser(id, title, items.map { it.toWeightedChooserItem() }.toMutableList(), currentPos)
 }
