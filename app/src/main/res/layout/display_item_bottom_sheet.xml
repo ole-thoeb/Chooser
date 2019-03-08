@@ -9,31 +9,30 @@
     app:behavior_hideable="false"
     app:behavior_peekHeight="@dimen/bottomSheetPeekHeight"
     app:layout_behavior="@string/bottom_sheet_behavior"
-    android:background="?attr/darkAccentColor"
     android:elevation="6dp">
 
     <TextView
         android:id="@+id/listTitleTV"
         android:layout_width="match_parent"
         android:layout_height="@dimen/bottomSheetPeekHeight"
-        android:textSize="@dimen/mediumTextSize"
-        android:textColor="?attr/textColorAgainstAccent"
-        android:textStyle="bold"
+        android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6"
+        android:textColor="?attr/colorOnSecondary"
         android:ellipsize="end"
         android:maxLines="1"
         android:paddingStart="@dimen/bigPadding"
-        android:layout_marginEnd="80dp"
-        android:gravity="center_vertical" />
+        android:paddingEnd="80dp"
+        android:gravity="center_vertical"
+        android:background="?attr/colorPrimary" />
 
     <emil.beothy.widget.BottomSheetListView
         android:id="@+id/list"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:paddingTop="@dimen/standardPadding"
         android:listSelector="@android:color/transparent"
-        android:divider="?attr/textColorAgainstAccent"
+        android:divider="?attr/colorOnSecondary"
         android:dividerHeight=".5dp"
         android:footerDividersEnabled="true"
-        android:headerDividersEnabled="true"/>
+        android:headerDividersEnabled="true"
+        android:background="?attr/colorPrimaryVariant"/>
 
 </LinearLayout>

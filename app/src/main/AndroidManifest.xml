@@ -7,7 +7,8 @@
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
-        android:supportsRtl="true">
+        android:supportsRtl="true"
+        android:theme="@style/LightAppTheme">
         <activity
             android:name=".MainActivity"
             android:label="@string/app_name"
@@ -21,7 +22,7 @@
         <activity
             android:name=".DefaultAddListActivity"
             android:screenOrientation="portrait"
-            android:theme="@style/DarkAppTheme">
+            android:theme="@style/LightAppTheme">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".MainActivity" />
@@ -43,7 +44,7 @@
         <activity
             android:name=".SettingsActivity"
             android:label="@string/title_activity_settings"
-            android:theme="@style/LightAppTheme.ColoredActionBar" />
+            android:theme="@style/LightAppTheme" />
     </application>
 
 </manifest>

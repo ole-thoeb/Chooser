@@ -1,15 +1,15 @@
 package chooser.com.example.eloem.chooser
 
-import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.support.v7.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatActivity
 import android.util.Log
 import android.view.*
 import android.widget.*
 import chooser.com.example.eloem.chooser.helperClasses.*
 import chooser.com.example.eloem.chooser.util.*
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.main_activity_list_item.view.*
 
@@ -24,9 +24,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         
         setContentView(R.layout.activity_main)
-        //registerForContextMenu(listView)
-        /*database.use { dropTables(this) }
-        database.use { createTables(this) }*/
+        
         fab.setOnClickListener {
             val id = newListId(this)
             val listObj = OrderChooser(id,
@@ -62,13 +60,15 @@ class MainActivity : AppCompatActivity() {
                     // Respond to clicks on the actions in the CAB
                     return when (item?.itemId) {
                         R.id.delete -> {
-                            mAdapter.deleteSelectedItems()
+                            showDeleteDialog(context) { mAdapter.deleteSelectedItems() }
                             mode.finish() // Action picked, so close the CAB
                             true
                         }
                         R.id.restart -> {
-                            mAdapter.selectedChoosersPos.forEach {
-                                mAdapter.restartList(it)
+                            showRestartDialog(context) {
+                                mAdapter.selectedChoosersPos.forEach {
+                                    mAdapter.restartList(it)
+                                }
                             }
                             mode.finish()
                             true
@@ -112,6 +112,7 @@ class MainActivity : AppCompatActivity() {
                     val menuInflater = mode.menuInflater
                     menuInflater.inflate(R.menu.context_main, menu)
                     currentlyCABActive = true
+                    window.statusBarColor = getAttribute(R.attr.colorPrimary).data
                     return true
                 }
     
@@ -124,7 +125,7 @@ class MainActivity : AppCompatActivity() {
                     // Here you can make any necessary updates to the activity when
                     // the CAB is removed. By default, selected items are deselected/unchecked.
                     currentlyCABActive = false
-    
+                    window.statusBarColor = getAttribute(R.attr.statusBarColor).data
                     mAdapter.selectedChoosersPos.clear()
                 }
             })
@@ -274,54 +275,12 @@ class MainActivity : AppCompatActivity() {
                         itemInCABPressed(position)
                         true
                 }
-                card.setCardBackgroundColor(context.getAttribute(
-                        if (isItemChecked(position)) R.attr.selectedItemBackground
-                        else R.attr.mCardBackgroundColor,
-                        true).data
+                card.setCardBackgroundColor(
+                        context.getAttribute(
+                                if (isItemChecked(position)) R.attr.selectedItemBackground
+                                else R.attr.mCardBackgroundColor
+                        ).data
                 )
-    
-                /*menuButton.setOnClickListener { button ->
-                    val popup = PopupMenu(context, button)
-                    with(popup) {
-                        menuInflater.inflate(R.menu.context_main, popup.menu)
-            
-                        setOnMenuItemClickListener {
-                            when (it.itemId) {
-                                R.id.delete -> {
-                                    AlertDialog.Builder(context)
-                                            .setMessage(R.string.dialogDeleteListMessage)
-                                            .setNegativeButton(R.string.dialogNegative) { _, _ ->
-                                                //nothing
-                                            }
-                                            .setPositiveButton(R.string.dialogPositive) { _, _ ->
-                                                deleteItem(position)
-                                            }
-                                            .show()
-                                    true
-                                }
-                                R.id.edit -> {
-                                    editItem(position)
-                                    true
-                                }
-                                R.id.restart -> {
-                                    AlertDialog.Builder(context)
-                                            .setMessage(R.string.dialogRestartListMessage)
-                                            .setNegativeButton(R.string.dialogNegative) { _, _ ->
-                                                //nothing
-                                            }
-                                            .setPositiveButton(R.string.dialogPositive) { _, _ ->
-                                                restartList(position)
-                                            }
-                                            .show()
-                                    true
-                                }
-                                else -> false
-                            }
-                        }
-            
-                        show()
-                    }
-                }*/
             }
             
             return vH

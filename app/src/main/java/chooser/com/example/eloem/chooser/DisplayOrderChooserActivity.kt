@@ -3,11 +3,11 @@ package chooser.com.example.eloem.chooser
 import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
-import android.support.v7.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.support.design.widget.BottomSheetBehavior
-import android.support.v4.app.NavUtils
-import android.support.v4.content.ContextCompat
+import com.google.android.material.bottomsheet.BottomSheetBehavior
+import androidx.core.app.NavUtils
+import androidx.core.content.ContextCompat
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
@@ -17,6 +17,7 @@ import android.widget.TextView
 import chooser.com.example.eloem.chooser.helperClasses.OrderChooser
 import chooser.com.example.eloem.chooser.helperClasses.parsType
 import chooser.com.example.eloem.chooser.util.*
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import kotlinx.android.synthetic.main.activity_display_item.*
 import kotlinx.android.synthetic.main.display_item_bottom_sheet.*
 
@@ -91,32 +92,19 @@ open class DisplayOrderChooserActivity<T: OrderChooser<*>> : AppCompatActivity()
     }
     
     open fun deleteChooser(){
-        AlertDialog.Builder(this)
-                .setMessage(R.string.dialogDeleteListMessage)
-                .setNegativeButton(R.string.dialogNegative) { _, _ ->
-                    //nothing
-                }
-                .setPositiveButton(R.string.dialogPositive) { _, _ ->
-                    deleteListEntry(this, data.id)
-                
-                    NavUtils.navigateUpFromSameTask(this)
-                }
-                .show()
+        showDeleteDialog(this) {
+            deleteListEntry(this, data.id)
+            NavUtils.navigateUpFromSameTask(this)
+        }
     }
     
     open fun restartChooser(){
-        AlertDialog.Builder(this)
-                .setMessage(R.string.dialogRestartListMessage)
-                .setNegativeButton(R.string.dialogNegative) { _, _ ->
-                    //nothing
-                }
-                .setPositiveButton(R.string.dialogPositive) { _, _ ->
-                    data.restart()
-                    updateJustList(this, data)
-                    updateItems(this, data.items, data.id)
-                    updateUiWithData()
-                }
-                .show()
+        showRestartDialog(this) {
+            data.restart()
+            updateJustList(this, data)
+            updateItems(this, data.items, data.id)
+            updateUiWithData()
+        }
     }
     
     open fun editChooser(){
@@ -141,9 +129,8 @@ open class DisplayOrderChooserActivity<T: OrderChooser<*>> : AppCompatActivity()
     
     inner class ListAdapter(val context: Context) : BaseAdapter() {
         
-        private val accentColor = context.getAttribute(R.attr.colorAccent, true).data
-        private val textColor = context.getAttribute(R.attr.itemTextColor, true).data
-        private val backgroundColor = context.getAttribute(R.attr.background, true).data
+        private val accentColor = context.getAttribute(R.attr.colorAccent).data
+        private val backgroundColor = context.getAttribute(R.attr.background).data
         
         override fun getCount() = data.items.size
         

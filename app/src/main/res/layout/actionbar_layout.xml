@@ -13,7 +13,7 @@
         android:maxLines="1"
         android:textStyle="bold"
         android:background="@android:color/transparent"
-        android:textColor="?attr/textColorAgainstBackground"
+        android:textColor="?attr/colorOnBackground"
         android:textSize="20sp"
         android:hint="@string/title" />
 </LinearLayout>

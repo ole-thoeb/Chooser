@@ -3,7 +3,7 @@
     android:id="@+id/itemTV"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:textSize="@dimen/standardTextSize"
-    android:textColor="?attr/textColorAgainstAccent"
+    android:textAppearance="@style/TextAppearance.MaterialComponents.Body1"
+    android:textColor="?attr/colorOnSecondary"
     android:paddingHorizontal="@dimen/bigPadding"
     android:paddingVertical="@dimen/standardPadding"/>

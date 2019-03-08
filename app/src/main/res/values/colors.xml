@@ -2,6 +2,16 @@
 <resources>
     <color name="darkGey">#404142</color>
     <color name="lightLightGrey">#d6d8db</color>
+
+    <color name="colorPrimary">#cc0000</color>
+    <color name="colorPrimaryDark">#930000</color>
+    <color name="colorPrimaryLight">#ff4f30</color>
+
+    <color name="colorSecondary">#fdd835</color>
+    <color name="colorSecondaryDark">#FFBE00</color>
+    <color name="colorSecondaryLight">#ffff6b</color>
+
+    <color name="colorConfirm">#23B40B</color>
     
     <color name="colorAccentLightTheme">@android:color/holo_red_dark</color>
     <color name="darkHighlightColor">#FF930000</color>
@@ -15,6 +25,8 @@
 
     <color name="materialBackgroundDark">#FF303030</color>
     <color name="materialBackgroundLight">#FFFAFAFA</color>
+
+    <color name="materialAppBarColor">#FF212121</color>
 
     <color name="ic_launcher_background">#212121</color>
 </resources>

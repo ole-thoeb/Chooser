@@ -22,16 +22,24 @@ fun newId(context: Context, key: String): Int{
 
 const val CURRENT_THEME_ID = "settingsTheme"
 
-val Context.currentColoredTheme get() = when(defaultSharedPreferences.getString(CURRENT_THEME_ID, "0")){
+private val Context.curThemeId get() = defaultSharedPreferences.getString(CURRENT_THEME_ID, "0")
+
+val Context.currentColoredTheme get() = when(curThemeId){
     "1" -> R.style.DarkAppTheme_ColoredActionBar
     "2" -> R.style.BlackAppTheme
     else -> R.style.LightAppTheme_ColoredActionBar
 }
 
-val Context.currentTheme get() = when(defaultSharedPreferences.getString(CURRENT_THEME_ID, "0")){
+val Context.currentTheme get() = when(curThemeId){
     "1" -> R.style.DarkAppTheme
     "2" -> R.style.BlackAppTheme
     else -> R.style.LightAppTheme
+}
+
+val Context.currentNoActionBarTheme get() = when(curThemeId){
+    "1" -> R.style.LightAppTheme_NoActionBar
+    "2" -> R.style.LightAppTheme_NoActionBar
+    else -> R.style.LightAppTheme_NoActionBar
 }
 
 const val NEED_TO_RECREATE_MAIN = "recreateMain"

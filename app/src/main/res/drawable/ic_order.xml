@@ -9,7 +9,7 @@
         android:translateY="2">
         <path
             android:name="vectorRow"
-            android:strokeColor="?attr/generalIconColor"
+            android:strokeColor="?attr/toolbarIconColor"
             android:strokeWidth="4"
             android:strokeLineCap="round"
             android:pathData="M 2,2 L 2,2 M 9,2 L 22,2"/>
@@ -18,7 +18,7 @@
         android:translateY="10">
         <path
             android:name="vectorRow"
-            android:strokeColor="?attr/generalIconColor"
+            android:strokeColor="?attr/toolbarIconColor"
             android:strokeWidth="4"
             android:strokeLineCap="round"
             android:pathData="M 2,2 L 2,2 M 9,2 L 22,2"/>
@@ -27,7 +27,7 @@
         android:translateY="18">
         <path
             android:name="vectorRow"
-            android:strokeColor="?attr/generalIconColor"
+            android:strokeColor="?attr/toolbarIconColor"
             android:strokeWidth="4"
             android:strokeLineCap="round"
             android:pathData="M 2,2 L 2,2 M 9,2 L 22,2"/>

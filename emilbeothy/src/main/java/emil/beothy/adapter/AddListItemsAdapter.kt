@@ -1,13 +1,13 @@
 package emil.beothy.adapter
 
-import android.support.v7.widget.RecyclerView
+import androidx.recyclerview.widget.RecyclerView
 
-abstract class AddListItemsAdapter <T> (var values: MutableList<T>): RecyclerView.Adapter<RecyclerView.ViewHolder>(){
-    lateinit var mRecyclerView: RecyclerView
+abstract class AddListItemsAdapter <T> (var values: MutableList<T>): androidx.recyclerview.widget.RecyclerView.Adapter<androidx.recyclerview.widget.RecyclerView.ViewHolder>(){
+    lateinit var mRecyclerView: androidx.recyclerview.widget.RecyclerView
     
     abstract fun defaultItem(): T
     
-    override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
+    override fun onAttachedToRecyclerView(recyclerView: androidx.recyclerview.widget.RecyclerView) {
         mRecyclerView = recyclerView
         super.onAttachedToRecyclerView(recyclerView)
     }

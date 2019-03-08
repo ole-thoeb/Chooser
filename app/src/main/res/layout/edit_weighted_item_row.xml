@@ -12,10 +12,8 @@
         android:padding="5dp"
         android:layout_marginVertical="3dp"
         android:layout_marginStart="11dp"
-        android:src="@drawable/weight_anim"
         android:scaleType="centerCrop"
         android:layout_gravity="start|top"
-        android:tint="?attr/generalIconColor"
         android:background="@drawable/round_button_background" />
 
     <emil.beothy.widget.BetterEditText
@@ -44,7 +42,7 @@
         android:clickable="false"
         android:focusable="false"
         android:visibility="invisible"
-        android:tint="?attr/generalIconColor"
+        android:tint="?attr/colorOnBackground"
         android:layout_marginEnd="11dp"
         android:layout_marginVertical="3dp"/>
 

@@ -1,14 +1,20 @@
 package chooser.com.example.eloem.chooser.util
 
 import android.content.Context
+import android.text.Editable
+import android.text.TextWatcher
 import android.util.TypedValue
 import android.view.View
 import android.view.inputmethod.InputMethodManager
+import chooser.com.example.eloem.chooser.R
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import java.util.*
 
-fun hideSoftKeyboard(context: Context, view: View?){
-    val ipm = context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-    ipm.hideSoftInputFromWindow(view?.windowToken, 0)
+fun hideSoftKeyboard(context: Context?, view: View?){
+    if (context != null) {
+        val ipm = context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        ipm.hideSoftInputFromWindow(view?.windowToken, 0)
+    }
 }
 
 fun View.showKeyboard() {
@@ -47,4 +53,42 @@ inline fun <T> makeNoDoubleActivation(coolDown: Long, crossinline action: (T) ->
             action(it)
         }
     }
+}
+
+inline fun afterTextChanged(crossinline action: (Editable?) -> Unit): TextWatcher {
+    return object : TextWatcher{
+        override fun afterTextChanged(s: Editable?) {
+            action(s)
+        }
+    
+        override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+        }
+    
+        override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+        }
+    }
+}
+
+inline fun showDeleteDialog(context: Context, crossinline deleteAction: () -> Unit) {
+    MaterialAlertDialogBuilder(context)
+            .setMessage(R.string.dialogDeleteListMessage)
+            .setNegativeButton(R.string.dialogNegative) {_, _ ->
+                //nothing
+            }
+            .setPositiveButton(R.string.dialogPositive) { _, _ ->
+                deleteAction()
+            }
+            .show()
+}
+
+inline fun showRestartDialog(context: Context, crossinline restartAction: () -> Unit) {
+    MaterialAlertDialogBuilder(context)
+            .setMessage(R.string.dialogRestartListMessage)
+            .setNegativeButton(R.string.dialogNegative) {_, _ ->
+                //nothing
+            }
+            .setPositiveButton(R.string.dialogPositive) { _, _ ->
+                restartAction()
+            }
+            .show()
 }

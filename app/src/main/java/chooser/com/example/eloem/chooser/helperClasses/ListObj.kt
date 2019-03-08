@@ -8,57 +8,6 @@ import kotlinx.android.parcel.RawValue
 import java.lang.Error
 import java.util.*
 
-/*@Parcelize
-data class ListObj(val id: Int, var title: String, var items: @RawValue Array<Item>, var currentPos: Int = 0, var mode: Int): Parcelable {
-    val currentItem get() = if (currentPos < items.size) items[currentPos]
-                                else Item("", -1)
-    
-    val hasNoItems get() = items.isEmpty()
-    
-    val hasNext: Boolean get() = when(mode) {
-        MODE_RANDOM_ORDER -> currentPos + 1 < items.size
-        MODE_SINGLE_PICK -> true
-        else -> false
-    }
-    
-    fun restart(){
-        when (mode) {
-            MODE_RANDOM_ORDER -> {
-                currentPos = 0
-                items = items.toList().shuffled().toTypedArray()
-            
-            }
-            MODE_SINGLE_PICK -> currentPos = randomInt(0, items.size)
-        }
-    }
-    
-    
-    fun nextItem(): Boolean = when(mode){
-        MODE_RANDOM_ORDER ->  {
-            currentPos ++
-            if (currentPos < items.size){
-                 true
-            }else{
-                currentPos --
-                false
-            }
-        }
-        MODE_SINGLE_PICK ->{
-            currentPos = randomInt(0, items.size)
-            true
-        }
-        else -> false
-    }
-    
-    
-    @Parcelize
-    data class Item(var name: String, val id: Int): Parcelable
-    
-    companion object {
-        const val MODE_RANDOM_ORDER = 1
-        const val MODE_SINGLE_PICK = 2
-    }
-}*/
 interface ChooserObj: Parcelable {
     val id: Int
     var title: String
@@ -190,4 +139,39 @@ fun ChooserObj.parsType(): String = when(this){
     is PickChooser<*> -> PickChooser.PARS_TYPE
     is OrderChooser<*> -> OrderChooser.PARS_TYPE
     else -> throw TypeCastException("Can't determine type of Chooser: $this")
+}
+
+private data class ConverterChooserItem(val name: String, val orgPos: Int, val randomPos: Int)
+
+data class MutableChooserItem(var name: String, var randomPos: Int)
+
+private data class ConverterWeightedChooserItem(val name: String, val orgPos: Int, val randomPos: Int, val weight: Int)
+
+data class MutableWeightedChooserItem(var name: String, var randomPos: Int, var weight: Int)
+
+fun List<ChooserItem>.toMutableChooserItems(): List<MutableChooserItem> {
+    return mapIndexed { index, item ->
+        ConverterChooserItem(item.name, item.originalPos, index)
+    }.sortedBy { it.orgPos }
+            .map { MutableChooserItem(it.name, it.randomPos) }
+}
+
+fun List<WeightedChooserItem>.toMutableWeightedChooserItems(): List<MutableWeightedChooserItem> {
+    return mapIndexed { index, item ->
+        ConverterWeightedChooserItem(item.name, item.originalPos, index, item.weight)
+    }.sortedBy { it.orgPos }
+            .map { MutableWeightedChooserItem(it.name, it.randomPos, it.weight) }
+}
+
+fun List<MutableChooserItem>.toChooserItems(): List<ChooserItem> {
+    return mapIndexed { index, item -> ConverterChooserItem(item.name, index, item.randomPos) }
+            .sortedBy { it.randomPos }
+            .map { ChooserItem(it.name, it.orgPos) }
+}
+
+fun List<MutableWeightedChooserItem>.toWeightedChooserItem(): List<WeightedChooserItem> {
+    return mapIndexed { index, item ->
+        ConverterWeightedChooserItem(item.name, index, item.randomPos, item.weight)
+    }.sortedBy { it.randomPos }
+            .map { WeightedChooserItem(it.name, it.orgPos, it.weight) }
 }

@@ -34,8 +34,9 @@
     <string name="chooseMode">Wähle Modus</string>
 
     <string-array name="modeArray">
-        <item>@string/randomPick</item>
         <item>@string/randomOrder</item>
+        <item>@string/randomPick</item>
+
         <item>@string/randomWeightedPick</item>
     </string-array>
 
@@ -44,6 +45,8 @@
     <string name="messageSafedChooser">Chooser gespeichert</string>
     <string name="messageWeightGreaterZero">Die Gewichtung muss mindestens 1 sein</string>
     <string name="dialogTitleSetWeight">Gewichtung</string>
+    <string name="hintSetWeight">Gewichtung</string>
+
 
     <string name="dialogNoMoreItemsMessage">Du hast das Ende der Liste ereicht</string>
     <string name="dialogNoMoreItemsPositive">Neustarten</string>
