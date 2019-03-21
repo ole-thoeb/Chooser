@@ -3,8 +3,6 @@ package chooser.com.example.eloem.chooser
 import android.annotation.SuppressLint
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.text.Editable
-import android.text.TextWatcher
 import androidx.core.app.NavUtils
 import android.util.Log
 import android.view.*
@@ -13,6 +11,10 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import chooser.com.example.eloem.chooser.chooser.*
+import chooser.com.example.eloem.chooser.database.deleteChooserItemChooser
+import chooser.com.example.eloem.chooser.database.getChooserItemChooser
+import chooser.com.example.eloem.chooser.database.updateChooserItemChooser
 import chooser.com.example.eloem.chooser.helperClasses.*
 import chooser.com.example.eloem.chooser.util.*
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -100,7 +102,7 @@ open class DefaultAddListActivity : AppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem?): Boolean = when (item?.itemId){
         R.id.delete -> {
             showDeleteDialog(this) {
-                deleteListEntry(this, chooserId)
+                deleteChooserItemChooser(this, chooserId)
     
                 NavUtils.navigateUpFromSameTask(this)
             }
@@ -160,13 +162,15 @@ abstract class AddChooserFragment: Fragment(){
 
 open class AddOrderChooserFragment: AddChooserFragment(){
     
-    open val chooser: OrderChooser<ChooserItem> by lazy {
+    open val chooser: ChooserItemChooser<ChooserItem> by lazy {
         val ctx = context
         val arg = arguments
         if (ctx != null &&  arg != null) {
             val chooserId = arg.getInt(DefaultAddListActivity.CHOOSER_ID_EXTRA)
-            getChooser(ctx, chooserId).toOrderChooser()
-        }else throw Error("could not get chooser id")
+            getChooserItemChooser(ctx, chooserId).toOrderChooser()
+        } else {
+            throw Error("could not get chooser id")
+        }
     }
     
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
@@ -196,18 +200,13 @@ open class AddOrderChooserFragment: AddChooserFragment(){
         val title = parentActivity.chooserTitle
         //when nothing was filled in -> discard list
         if (cleanedItems.isEmpty() && title == "") {
-            deleteListEntry(ctx, chooser.id)
+            deleteChooserItemChooser(ctx, chooser.id)
             return
         }
         
-        chooser.items.apply {
-            clear()
-            addAll(cleanedItems.toChooserItems())
-        }
-        chooser.title = title
-        
         //write/update data to database
-        updateListEntryComplete(ctx, chooser)
+        updateChooserItemChooser(ctx,
+                chooser.copy(pTitle = title, pItems = cleanedItems.toChooserItems().toMutableList()))
     }
     
     class OrderAdapter(values: MutableList<MutableChooserItem>):
@@ -275,7 +274,7 @@ open class AddPickChooserFragment: AddOrderChooserFragment(){
         val arg = arguments
         if (ctx != null &&  arg != null) {
             val chooserId = arg.getInt(DefaultAddListActivity.CHOOSER_ID_EXTRA)
-            getChooser(ctx, chooserId).toPickChooser()
+            getChooserItemChooser(ctx, chooserId).toPickChooser()
         }else throw Error("could not get chooser id")
     }
 }
@@ -287,7 +286,7 @@ open class AddWeightedChooserFragment: AddChooserFragment(){
         val arg = arguments
         if (ctx != null &&  arg != null) {
             val chooserId = arg.getInt(DefaultAddListActivity.CHOOSER_ID_EXTRA)
-            getChooser(ctx, chooserId).toWeightedChooser()
+            getChooserItemChooser(ctx, chooserId).toWeightedChooser()
         }else throw Error("could not get chooser id")
     }
     
@@ -317,18 +316,15 @@ open class AddWeightedChooserFragment: AddChooserFragment(){
         val title = parentActivity.chooserTitle
         //when nothing was filled in -> discard list
         if (cleanedItems.isEmpty() && title == "") {
-            deleteListEntry(ctx, chooser.id)
+            deleteChooserItemChooser(ctx, chooser.id)
             return
         }
         
-        chooser.items.apply {
-            clear()
-            addAll(cleanedItems.toWeightedChooserItem())
-        }
-        chooser.title = title
+        val newRandomizer = chooser.copy(pTitle = title,
+                pItems = cleanedItems.toWeightedChooserItem().toMutableList())
         
         //write/update data to database
-        updateListEntryComplete(ctx, chooser)
+        updateChooserItemChooser(ctx, newRandomizer)
     }
     
     open class WeightAdapter(values: MutableList<MutableWeightedChooserItem>):

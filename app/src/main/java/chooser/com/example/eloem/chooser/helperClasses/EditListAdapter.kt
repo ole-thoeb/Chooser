@@ -12,9 +12,9 @@ import chooser.com.example.eloem.chooser.util.hideSoftKeyboard
 import emil.beothy.widget.BetterEditText
 
 abstract class EditListAdapter<T>(val values: MutableList<T>):
-        androidx.recyclerview.widget.RecyclerView.Adapter<androidx.recyclerview.widget.RecyclerView.ViewHolder>(){
+        RecyclerView.Adapter<RecyclerView.ViewHolder>(){
     
-    lateinit var recyclerView: androidx.recyclerview.widget.RecyclerView
+    lateinit var recyclerView: RecyclerView
     val context: Context by lazy { recyclerView.context }
     
     private var lastInsertedPos: Int? = null
@@ -29,17 +29,17 @@ abstract class EditListAdapter<T>(val values: MutableList<T>):
      * parameters are removed item and the position it was removed*/
     var onRemoveItemListener: ((T, Int) -> Unit)? = null
     
-    abstract class EditRowVH(layout: View): androidx.recyclerview.widget.RecyclerView.ViewHolder(layout){
+    abstract class EditRowVH(layout: View): RecyclerView.ViewHolder(layout){
         abstract val itemNameET: BetterEditText
         abstract val deleteButton: ImageButton
     }
     
-    override fun onAttachedToRecyclerView(rV: androidx.recyclerview.widget.RecyclerView) {
+    override fun onAttachedToRecyclerView(rV: RecyclerView) {
         recyclerView = rV
         super.onAttachedToRecyclerView(recyclerView)
     }
     
-    override fun onBindViewHolder(holder: androidx.recyclerview.widget.RecyclerView.ViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         if (holder.itemViewType == VIEW_TYPE_EDIT_ROW) {
             val realHolder = holder as EditRowVH
             with(realHolder.itemNameET) {

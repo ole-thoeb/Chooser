@@ -7,9 +7,9 @@ import androidx.appcompat.app.AppCompatActivity
 import android.util.Log
 import android.view.*
 import android.widget.*
-import chooser.com.example.eloem.chooser.helperClasses.*
+import chooser.com.example.eloem.chooser.chooser.*
+import chooser.com.example.eloem.chooser.database.*
 import chooser.com.example.eloem.chooser.util.*
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.main_activity_list_item.view.*
 
@@ -35,7 +35,7 @@ class MainActivity : AppCompatActivity() {
                 putExtra(DefaultAddListActivity.CHOOSER_ID_EXTRA, id)
                 putExtra(DefaultAddListActivity.CHOOSER_TYPE_EXTRA, listObj.parsType())
             }
-            insertListEntry(this, listObj)
+            insertChooserItemChooser(this, listObj)
             startActivity(intent)
         }
     }
@@ -46,7 +46,7 @@ class MainActivity : AppCompatActivity() {
         super.onResume()
         
         //get data from database
-        val data = getAllListObj(this)
+        val data = getAllChooserItemChooser(this)
     
         val mAdapter = MainListAdapter(this, data.toMutableList())
     
@@ -178,7 +178,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
     
-    inner class MainListAdapter(private val context: Context, val values: MutableList<ChooserObj>): BaseAdapter(){
+    inner class MainListAdapter(private val context: Context, val values: MutableList<ChooserItemChooser<out ChooserItem>>): BaseAdapter(){
         
         val selectedChoosersPos = mutableListOf<Int>()
     
@@ -237,19 +237,17 @@ class MainActivity : AppCompatActivity() {
             
             with(vH){
                 progressTV.text = when(listObj){
-                    is PickChooser<*> -> resources.getString(R.string.randomPick)
                     is OrderChooser<*> -> {
                         if (listObj.hasNoItems) resources.getString(R.string.noItem)
                         else resources.getString(R.string.progressString, listObj.currentPos + 1, listObj.items.size)
                     }
-        
-                    else -> resources.getString(R.string.error)
+                    is PickChooser<*> -> resources.getString(R.string.randomPick)
                 }
     
                 titleTV.text = listObj.title
                 currentItemTV.text =
                         if (listObj.hasNoItems) ""
-                        else listObj.currentItem.name
+                        else listObj.current.name
     
                 card.setNoDoubleClickListener{
                     Log.d(TAG, "NormalPress")
@@ -259,14 +257,14 @@ class MainActivity : AppCompatActivity() {
                         val chooser = values[position]
     
                         when (chooser) {
-                            is PickChooser<*> ->
-                                startActivity(Intent(context, DisplayPickChooserActivity::class.java).apply {
-                                putExtra(DisplayOrderChooserActivity.CHOOSER_ID_EXTRA, chooser.id)
-                            })
                             is OrderChooser<*> ->
-                                startActivity(Intent(context, DisplayOrderChooserActivity::class.java).apply {
-                                putExtra(DisplayOrderChooserActivity.CHOOSER_ID_EXTRA, chooser.id)
-                            })
+                                startActivity(Intent(context, DisplayOrderChooserActivity::class.java)
+                                        .putExtra(DisplayOrderChooserActivity.CHOOSER_ID_EXTRA, chooser.id)
+                                )
+                            is PickChooser<*> ->
+                                startActivity(Intent(context, DisplayPickChooserActivity::class.java)
+                                        .putExtra(DisplayOrderChooserActivity.CHOOSER_ID_EXTRA, chooser.id)
+                                )
                         }
                     }
                 }
@@ -288,14 +286,14 @@ class MainActivity : AppCompatActivity() {
         
         fun deleteSelectedItems(){
             val choosers = values.filterIndexed { index, chooserObj -> index in selectedChoosersPos }
-            choosers.forEach { deleteListEntry(context, it.id) }
+            choosers.forEach { deleteChooserItemChooser(context, it.id) }
             values.removeAll(choosers)
             notifyDataSetChanged()
         }
         
         fun deleteItem(pos: Int){
             if (pos < count){
-                deleteListEntry(context, values[pos].id)
+                deleteChooserItemChooser(context, values[pos].id)
                 values.removeAt(pos)
                 notifyDataSetChanged()
             }
@@ -316,8 +314,8 @@ class MainActivity : AppCompatActivity() {
             val chooser = values[pos]
             if (chooser is OrderChooser<*>){
                 chooser.restart()
-                updateJustList(context, chooser)
-                updateItems(context, chooser.items, chooser.id)
+                updateJustChooserItemChooser(context, chooser)
+                updateChooserItems(context, chooser.items, chooser.id)
                 notifyDataSetChanged()
             }
         }

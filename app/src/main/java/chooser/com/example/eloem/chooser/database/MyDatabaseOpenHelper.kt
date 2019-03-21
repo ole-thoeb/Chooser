@@ -1,9 +1,7 @@
-package chooser.com.example.eloem.chooser.helperClasses
+package chooser.com.example.eloem.chooser.database
 
 import android.content.Context
 import android.database.sqlite.SQLiteDatabase
-import chooser.com.example.eloem.chooser.util.createTables
-import chooser.com.example.eloem.chooser.util.dropTables
 import org.jetbrains.anko.db.*
 
 class MyDatabaseOpenHelper(context: Context): ManagedSQLiteOpenHelper(context, "MyDatabase", null, 4) {
