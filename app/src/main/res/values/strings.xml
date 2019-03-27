@@ -47,6 +47,13 @@
     <string name="dialogTitleSetWeight">Gewichtung</string>
     <string name="hintSetWeight">Gewichtung</string>
 
+    <plurals name="deletedChooserMessage">
+        <item quantity="one">Chooser gelöscht</item>
+        <item quantity="other">%1$d Chooser gelöscht</item>
+    </plurals>
+
+    <string name="restartedChooserMessage">Chooser neugestartet</string>
+    <string name="undo">rückgängig</string>
 
     <string name="dialogNoMoreItemsMessage">Du hast das Ende der Liste ereicht</string>
     <string name="dialogNoMoreItemsPositive">Neustarten</string>

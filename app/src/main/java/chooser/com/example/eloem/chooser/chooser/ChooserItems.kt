@@ -22,32 +22,24 @@ fun ChooserItem.toWeightedChooserItem(): WeightedChooserItem =
         if (this is WeightedChooserItem) this
         else WeightedChooserItem(name, originalPos)
 
-private data class ConverterChooserItem(val name: String, val orgPos: Int, val randomPos: Int)
+val ChooserItem.weight: Int get() {
+    return if (this is WeightedChooserItem) weight
+    else 1
+}
 
-data class MutableChooserItem(var name: String, var randomPos: Int)
+fun MutableList<out ChooserItem>.toWeightedChooserItems(): List<WeightedChooserItem> {
+    return map { it.toWeightedChooserItem() }
+}
 
 private data class ConverterWeightedChooserItem(val name: String, val orgPos: Int, val randomPos: Int, val weight: Int)
 
-data class MutableWeightedChooserItem(var name: String, var randomPos: Int, var weight: Int)
+data class MutableWeightedChooserItem(var name: String, var randomPos: Int, var weight: Int = 1)
 
-fun List<ChooserItem>.toMutableChooserItems(): List<MutableChooserItem> {
-    return mapIndexed { index, item ->
-        ConverterChooserItem(item.name, item.originalPos, index)
-    }.sortedBy { it.orgPos }
-            .map { MutableChooserItem(it.name, it.randomPos) }
-}
-
-fun List<WeightedChooserItem>.toMutableWeightedChooserItems(): List<MutableWeightedChooserItem> {
+fun List<ChooserItem>.toMutableChooserItems(): List<MutableWeightedChooserItem> {
     return mapIndexed { index, item ->
         ConverterWeightedChooserItem(item.name, item.originalPos, index, item.weight)
     }.sortedBy { it.orgPos }
             .map { MutableWeightedChooserItem(it.name, it.randomPos, it.weight) }
-}
-
-fun List<MutableChooserItem>.toChooserItems(): List<ChooserItem> {
-    return mapIndexed { index, item -> ConverterChooserItem(item.name, index, item.randomPos) }
-            .sortedBy { it.randomPos }
-            .map { ChooserItem(it.name, it.orgPos) }
 }
 
 fun List<MutableWeightedChooserItem>.toWeightedChooserItem(): List<WeightedChooserItem> {

@@ -37,8 +37,8 @@ val Context.currentTheme get() = when(curThemeId){
 }
 
 val Context.currentNoActionBarTheme get() = when(curThemeId){
-    "1" -> R.style.LightAppTheme_NoActionBar
-    "2" -> R.style.LightAppTheme_NoActionBar
+    "1" -> R.style.DarkAppTheme_NoActionBar
+    "2" -> R.style.BlackAppTheme_NoActionBar
     else -> R.style.LightAppTheme_NoActionBar
 }
 

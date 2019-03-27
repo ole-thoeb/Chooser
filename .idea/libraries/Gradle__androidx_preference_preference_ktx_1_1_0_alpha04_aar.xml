@@ -1,0 +1,12 @@
+<component name="libraryTable">
+  <library name="Gradle: androidx.preference:preference-ktx:1.1.0-alpha04@aar">
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.gradle/caches/transforms-1/files-1.1/preference-ktx-1.1.0-alpha04.aar/8052cef6effa453d2d85a5034747d0b8/jars/classes.jar!/" />
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-1/files-1.1/preference-ktx-1.1.0-alpha04.aar/8052cef6effa453d2d85a5034747d0b8/res" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/androidx.preference/preference-ktx/1.1.0-alpha04/1780f590aa4d008c891d307b358062f424e3535b/preference-ktx-1.1.0-alpha04-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

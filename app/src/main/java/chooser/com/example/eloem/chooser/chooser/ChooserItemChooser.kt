@@ -3,20 +3,53 @@ package chooser.com.example.eloem.chooser.chooser
 import android.util.Log
 import chooser.com.example.eloem.chooser.util.randomInt
 
-sealed class ChooserItemChooser<T: ChooserItem>(override val id: Int,
-                                                override val title: String,
-                                                override val items: MutableList<T>,
-                                                override var currentPos: Int = 0):
-        Chooser<ChooserItem>, ItemRandomizer<ChooserItem> {
+sealed class ChooserItemChooser<T: ChooserItem>(
+        override val id: Int,
+        override val title: String,
+        override val items: MutableList<T>,
+        cPos: Int = 0
+): Chooser<ChooserItem>, ItemRandomizer<ChooserItem> {
     
-    abstract fun copy(pId: Int = id, pTitle: String = title, pItems: MutableList<T>, pCurrentPos: Int = currentPos): ChooserItemChooser<T>
+    override var currentPos: Int = cPos
+        get() = if (field < items.size) {
+            field
+        } else {
+            field = items.lastIndex
+            field
+        }
+    
+    abstract fun copy(pId: Int = id,
+                      pTitle: String = title,
+                      pItems: MutableList<T> = items,
+                      pCurrentPos: Int = currentPos): ChooserItemChooser<T>
+    
+    companion object {
+        val EMPTY: ChooserItemChooser<ChooserItem> get() = PickChooser(-1, "", mutableListOf())
+    }
 }
+
+fun ChooserItemChooser<out ChooserItem>.copy(
+        pId: Int = id,
+        pTitle: String = title,
+        pItems: MutableList<out ChooserItem> = items,
+        pCurrentPos: Int = currentPos
+): ChooserItemChooser<out ChooserItem> {
+    
+    return when (this) {
+        is OrderChooser<*> -> OrderChooser(pId, pTitle, pItems.toWeightedChooserItems().toMutableList(), pCurrentPos)
+        is WeightedChooser<*> -> WeightedChooser(pId, pTitle, pItems.toWeightedChooserItems().toMutableList(), pCurrentPos)
+        is PickChooser<*> -> PickChooser(pId, pTitle, pItems.toWeightedChooserItems().toMutableList(), pCurrentPos)
+    }
+}
+
 
 fun ChooserItemChooser<*>.parsType(): String = when(this){
     is WeightedChooser<*> -> WeightedChooser.PARS_TYPE
     is OrderChooser<*> -> OrderChooser.PARS_TYPE
     is PickChooser<*> -> PickChooser.PARS_TYPE
 }
+
+val ChooserItemChooser<*>.parsType: String get() = parsType()
 
 open class PickChooser<T: ChooserItem>(id: Int,
                                        title: String,
@@ -40,7 +73,7 @@ open class PickChooser<T: ChooserItem>(id: Int,
     
     override fun next(): ChooserItem = nextItem()
     
-    override fun copy(pId: Int, pTitle: String, pItems: MutableList<T>, pCurrentPos: Int): ChooserItemChooser<T> {
+    override fun copy(pId: Int, pTitle: String, pItems: MutableList<T>, pCurrentPos: Int): PickChooser<T> {
         return PickChooser(pId, pTitle, pItems, pCurrentPos)
     }
     
@@ -67,9 +100,11 @@ open class OrderChooser<T: ChooserItem>(id: Int,
         items.shuffle()
     }
     
-    override fun copy(pId: Int, pTitle: String, pItems: MutableList<T>, pCurrentPos: Int): ChooserItemChooser<T> {
+    override fun copy(pId: Int, pTitle: String, pItems: MutableList<T>, pCurrentPos: Int): OrderChooser<T> {
         return OrderChooser(pId, pTitle, pItems, pCurrentPos)
     }
+    
+    fun deepCopy() = copy(pItems = items.toList().toMutableList())
     
     companion object {
         const val PARS_TYPE = "OrderChooser"
@@ -100,7 +135,7 @@ open class WeightedChooser<T: WeightedChooserItem>(id: Int, title: String, items
             else items[currentPos]
     
     
-    override fun copy(pId: Int, pTitle: String, pItems: MutableList<T>, pCurrentPos: Int): ChooserItemChooser<T> {
+    override fun copy(pId: Int, pTitle: String, pItems: MutableList<T>, pCurrentPos: Int): WeightedChooser<T> {
         return WeightedChooser(pId, pTitle, pItems, pCurrentPos)
     }
     

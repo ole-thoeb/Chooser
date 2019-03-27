@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/listOfChooserFragment">
+
+    <fragment
+        android:id="@+id/listOfChooserFragment"
+        android:name="chooser.com.example.eloem.chooser.ListOfChooserFragment"
+        android:label="ListOfChooserFragment"
+        app:layout="@layout/fragment_list_of_choosers">
+        <action
+            android:id="@+id/action_listOfChooserFragment_to_displayPickChooserFragment"
+            app:destination="@id/displayPickChooserFragment" />
+        <action
+            android:id="@+id/action_listOfChooserFragment_to_displayOrderChooserFragment"
+            app:destination="@id/displayOrderChooserFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/displayPickChooserFragment"
+        android:name="chooser.com.example.eloem.chooser.DisplayPickChooserFragment"
+        android:label="DisplayPickChooserFragment"
+        app:layout="@layout/fragment_display_chooser" >
+        <argument
+            android:name="chooserId"
+            app:argType="integer"
+            android:defaultValue="-1" />
+        <argument
+            android:name="postponeBottomSheet"
+            app:argType="boolean"
+            android:defaultValue="false" />
+    </fragment>
+    <fragment
+        android:id="@+id/chooserItemChooserEditorFragment"
+        android:name="chooser.com.example.eloem.chooser.ChooserItemChooserEditorFragment"
+        android:label="AChooserItemChooserFragment"
+        tools:layout="@layout/fragment_add_chooser_item_chooser">
+        <action
+            android:id="@+id/action_chooserItemChooserEditorFragment_to_displayPickChooserFragment"
+            app:destination="@id/displayPickChooserFragment" />
+        <argument
+            android:name="chooserId"
+            android:defaultValue="-1"
+            app:argType="integer" />
+        <action
+            android:id="@+id/action_chooserItemChooserEditorFragment_to_displayOrderChooserFragment"
+            app:destination="@id/displayOrderChooserFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/displayOrderChooserFragment"
+        android:name="chooser.com.example.eloem.chooser.DisplayOrderChooserFragment"
+        android:label="DisplayOrderChooserFragment"
+        tools:layout="@layout/fragment_display_chooser" >
+        <argument
+            android:name="chooserId"
+            app:argType="integer"
+            android:defaultValue="-1" />
+        <argument
+            android:name="postponeBottomSheet"
+            app:argType="boolean"
+            android:defaultValue="false" />
+    </fragment>
+    <action
+        android:id="@+id/action_global_addChooserItemChooserFragment"
+        app:destination="@id/chooserItemChooserEditorFragment" />
+    <fragment
+        android:id="@+id/settingsFragment"
+        android:name="chooser.com.example.eloem.chooser.SettingsFragment"
+        android:label="SettingsFragment" />
+    <action
+        android:id="@+id/action_global_settingsFragment"
+        app:destination="@id/settingsFragment" />
+</navigation>

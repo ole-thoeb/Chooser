@@ -15,7 +15,7 @@ interface ItemRandomizer<T> {
     val items: List<T>
     fun nextItem(): T
     val currentItem: T
-    val currentPos: Int
+    var currentPos: Int
     val hasNoItems: Boolean
     
     //fun copy(pId: Int, pTitle: String, pItems: List<T>, pCurrentPos: Int): ItemRandomizer<T>
