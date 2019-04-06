@@ -1,4 +1,4 @@
-package chooser.com.example.eloem.chooser
+package chooser.com.example.eloem.chooser.ui
 
 import android.os.Bundle
 import android.util.Log
@@ -11,12 +11,16 @@ import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import chooser.com.example.eloem.chooser.R
 import chooser.com.example.eloem.chooser.chooser.*
+import chooser.com.example.eloem.chooser.helperClasses.AnimatedIconFab
 import chooser.com.example.eloem.chooser.util.*
+import com.example.eloem.dartCounter.recyclerview.BottomSpacingAdapter
 import com.example.eloem.dartCounter.recyclerview.ContextAdapter
 import com.google.android.material.card.MaterialCardView
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.fragment_list_of_choosers.*
+import java.lang.Error
 import kotlin.jvm.internal.Ref
 
 class ListOfChooserFragment : ChildFragment() {
@@ -51,9 +55,10 @@ class ListOfChooserFragment : ChildFragment() {
             globalModel.handOverChooserItemChooser = newChooser
     
             findNavController().navigate(
-                    ListOfChooserFragmentDirections
-                            .actionGlobalAddChooserItemChooserFragment(id))
+                    ListOfChooserFragmentDirections.actionGlobalAddChooserItemChooserFragment(id))
         }
+        hostActivity.showFab()
+        hostActivity.mainFab.animateToIcon(AnimatedIconFab.Icon.ADD)
         
         hostActivity.hideBottomSheet()
         
@@ -62,13 +67,13 @@ class ListOfChooserFragment : ChildFragment() {
         mRecyclerAdapter = MainListAdapter(hostActivity, mutableListOf(), selectedPos, vm.cabActive, globalModel)
     
         recyclerView.apply {
-            adapter = mRecyclerAdapter
-            emptyThreshold = 0
+            adapter = BottomSpacingAdapter(mRecyclerAdapter, resources.getDimensionPixelSize(R.dimen.paddingBottomRecyclerView))
+            emptyThreshold = 1
             emptyView = empty
             layoutManager = LinearLayoutManager(requireContext())
         }
         
-        globalModel.allChooserItemChoosers.observe(viewLifecycleOwner, Observer {
+        globalModel.allChoosers.observe(viewLifecycleOwner, Observer {
             mRecyclerAdapter.values = it.toMutableList()
             mRecyclerAdapter.notifyDataSetChanged()
         })
@@ -105,12 +110,13 @@ class ListOfChooserFragment : ChildFragment() {
         }
     }
     
-    class MainListAdapter(private val host: HostActivity,
-                          var values: MutableList<ChooserItemChooser<out ChooserItem>>,
-                          private val selectedChoosersPos: MutableList<Int>,
-                          private val cabActive: Ref.BooleanRef,
-                          private val gVm: GlobalViewModel):
-            ContextAdapter<MainListAdapter.ViewHolder1>(){
+    class MainListAdapter(
+            private val host: HostActivity,
+            var values: MutableList<Chooser<*>>,
+            private val selectedChoosersPos: MutableList<Int>,
+            private val cabActive: Ref.BooleanRef,
+            private val gVm: GlobalViewModel
+    ): ContextAdapter<MainListAdapter.ViewHolder1>(){
         
         private var actionMode: ActionMode? = null
         
@@ -253,24 +259,31 @@ class ListOfChooserFragment : ChildFragment() {
             
             with(holder){
                 progressTV.text = when(chooser){
+                    is MultiDiceList -> context.getString(R.string.diceAmount, chooser.sumBy { it.size })
                     is OrderChooser<*> -> {
                         if (chooser.hasNoItems) context.getString(R.string.noItem)
                         else context.getString(R.string.progressString, chooser.currentPos + 1, chooser.items.size)
                     }
                     is PickChooser<*> -> context.getString(R.string.randomPick)
+                    else -> throw Error("unknown chooser: $chooser")
                 }
         
                 titleTV.text = chooser.title
-                currentItemTV.text =
+                currentItemTV.text = when(chooser) {
+                    is ChooserItemChooser<*> -> {
                         if (chooser.hasNoItems) ""
                         else chooser.current.name
+                    }
+                    is MultiDiceList -> ""
+                    else -> throw Error("unknown chooser: $chooser")
+                }
         
-                card.setNoDoubleClickListener{
+                card.setNoDoubleClickListener {
                     val pos = holder.adapterPosition
                     Log.d(TAG, "NormalPress")
                     if (actionMode != null){
                         itemInCABPressed(pos, it)
-                    }else {
+                    } else {
                         val c = values[pos]
                         
                         when (c) {
@@ -279,8 +292,10 @@ class ListOfChooserFragment : ChildFragment() {
                                         .navigate(ListOfChooserFragmentDirections.actionListOfChooserFragmentToDisplayOrderChooserFragment(c.id))
                             is PickChooser<*> ->
                                 recyclerView.findNavController()
-                                        .navigate(ListOfChooserFragmentDirections
-                                                .actionListOfChooserFragmentToDisplayPickChooserFragment(c.id))
+                                        .navigate(ListOfChooserFragmentDirections.actionListOfChooserFragmentToDisplayPickChooserFragment(c.id))
+                            is MultiDiceList ->
+                                recyclerView.findNavController()
+                                        .navigate(ListOfChooserFragmentDirections.actionListOfChooserFragmentToDisplayMultiDiceListFragment(c.id))
                         }
                     }
                 }
@@ -296,20 +311,17 @@ class ListOfChooserFragment : ChildFragment() {
     
         override fun getItemCount(): Int  = values.size
         
-        private var lastDeleted: List<ChooserItemChooser<out ChooserItem>>? = null
-        
         fun deleteSelectedItems(positions: List<Int>){
             val choosers = values.filterIndexed { index, _ -> index in positions }
-            //choosers.forEach { deleteChooserItemChooser(context, it.id) }
-            lastDeleted = choosers
-            choosers.forEach { gVm.deleteChooserItemChooser(it.id) }
+            //choosers.forEach { deleteChooserItemChooser(context, it.diceId) }
+            choosers.forEach { gVm.deleteChooser(it) }
             values.removeAll(choosers)
             Snackbar.make(host.rootView,
                     context.resources.getQuantityString(R.plurals.deletedChooserMessage, choosers.size, choosers.size),
                     Snackbar.LENGTH_LONG)
                     .setAnchorView(host.mainFab)
                     .setAction(R.string.undo) {
-                        lastDeleted?.forEach { gVm.insertChooserItemChooser(it) }
+                        choosers.forEach { gVm.insertChooser(it) }
                     }
                     .show()
             /*if (choosers.size == 1) notifyItemRemoved(positions.first())
@@ -318,18 +330,25 @@ class ListOfChooserFragment : ChildFragment() {
         
         /*fun deleteItem(pos: Int){
             if (pos < itemCount){
-                deleteChooserItemChooser(context, values[pos].id)
+                deleteChooserItemChooser(context, values[pos].diceId)
                 values.removeAt(pos)
                 notifyDataSetChanged()
             }
         }*/
         
-        fun editItem(pos: Int){
+        fun editItem(pos: Int) {
             if (pos < itemCount){
                 val chooser = values[pos]
-                recyclerView.findNavController()
-                        .navigate(ListOfChooserFragmentDirections
-                                .actionGlobalAddChooserItemChooserFragment(chooser.id))
+                when (chooser) {
+                    is ChooserItemChooser<*> -> recyclerView
+                            .findNavController()
+                            .navigate(ListOfChooserFragmentDirections
+                                    .actionGlobalAddChooserItemChooserFragment(chooser.id))
+                    is MultiDiceList -> recyclerView
+                            .findNavController()
+                            .navigate(ListOfChooserFragmentDirections
+                                    .actionListOfChooserFragmentToDiceEditorFragment(chooser.id))
+                }
             }
         }
         

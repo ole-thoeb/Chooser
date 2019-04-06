@@ -1,24 +1,9 @@
 package chooser.com.example.eloem.chooser.database
 
-import chooser.com.example.eloem.chooser.chooser.ChooserItem
-import chooser.com.example.eloem.chooser.chooser.ChooserItemChooser
-import chooser.com.example.eloem.chooser.chooser.parsType
-import chooser.com.example.eloem.chooser.chooser.weight
-import chooser.com.example.eloem.chooser.chooser.WeightedChooserItem
-import chooser.com.example.eloem.chooser.chooser.OrderChooser
-import chooser.com.example.eloem.chooser.chooser.PickChooser
-import chooser.com.example.eloem.chooser.chooser.WeightedChooser
+import android.util.Log
+import chooser.com.example.eloem.chooser.chooser.*
+import java.lang.Exception
 import java.util.*
-
-fun ChooserItemChooser<out ChooserItem>.getSqlItems(): List<ChooserItemSql> {
-    return items.mapIndexed { index, item ->
-        ChooserItemSql(item.name, id, index, item.originalPos, item.weight)
-    }
-}
-
-fun ChooserItemChooser<out ChooserItem>.getSqlChooser(): ChooserItemChooserSql {
-    return ChooserItemChooserSql(id, title, currentPos, parsType)
-}
 
 fun ChooserWithChooserItems.toStandardChooserItemChooser(): ChooserItemChooser<out ChooserItem> {
     val items = items!!
@@ -26,22 +11,8 @@ fun ChooserWithChooserItems.toStandardChooserItemChooser(): ChooserItemChooser<o
             .map { WeightedChooserItem(it.name, it.originalPosition, it.weight) }
             .toMutableList()
     
-    val c = chooser
-    return when(c?.type) {
-        OrderChooser.PARS_TYPE -> OrderChooser(c.id,
-                c.name,
-                items,
-                c.currentPos)
-        PickChooser.PARS_TYPE -> PickChooser(c.id,
-                c.name,
-                items,
-                c.currentPos)
-        WeightedChooser.PARS_TYPE -> WeightedChooser(c.id,
-                c.name,
-                items,
-                c.currentPos)
-        else -> throw UnknownFormatFlagsException("Unknown type string: $chooser.type")
-    }
+    val c = chooser!!
+    return ChooserItemChooser(c.id, c.name, items, c.currentPos, c.type)
 }
 
 fun ChooserItemChooser<out ChooserItem>.toSqlType(): ChooserItemChooserSql {
@@ -52,4 +23,41 @@ fun ChooserItemChooser<out ChooserItem>.itemsToSqlType(): List<ChooserItemSql> {
     return items.mapIndexed { index, item ->
         ChooserItemSql(item.name, id, index, item.originalPos, item.weight)
     }
+}
+
+/*fun MultiDiceListWithDice.toStandardMultiDiceList(): MultiDiceList {
+    return MultiDiceList(multiDiceList!!.id,
+            multiDiceList!!.title,
+            dices!!.map { it.toStandardMultiDice() })
+}*/
+
+fun MultiDiceWithCurrent.toStandardMultiDice(): MultiDice {
+    val mDice = multiDice!!
+    
+    return try {
+        MultiDice(mDice.diceId,
+                mDice.sides,
+                mDice.times,
+                mDice.color,
+                current!!.map { cur -> cur.value })
+    } catch (e: Exception) {
+        Log.e("Conversion", e.localizedMessage)
+        MultiDice(mDice.diceId,
+                mDice.sides,
+                mDice.times,
+                mDice.color,
+                List(mDice.times) { 1 })
+    }
+}
+
+fun MultiDiceList.toSqlType(): MultiDiceListSql {
+    return MultiDiceListSql(id, title)
+}
+
+fun MultiDice.toSqlType(listId: Int): MultiDiceSql {
+    return MultiDiceSql(id, listId, sides, times, color)
+}
+
+fun MultiDice.currentToSqlType(): List<MultiDiceCurrentSql> {
+    return current.map { MultiDiceCurrentSql(id, it) }
 }

@@ -13,6 +13,14 @@ const val LIST_ID_ID = "listIdId"
 
 fun newListId(context: Context): Int = newId(context, LIST_ID_ID)
 
+const val MULTI_DICE_LIST_ID_ID = "multiDiceListId"
+
+fun newMultiDiceListId(context: Context) = newId(context, MULTI_DICE_LIST_ID_ID)
+
+const val MULTI_DICE_ID_ID = "multiDiceID"
+
+fun newMultiDiceId(context: Context) = newId(context, MULTI_DICE_ID_ID)
+
 fun newId(context: Context, key: String): Int{
     val DSP = context.defaultSharedPreferences
     val id = DSP.getInt(key, 0)

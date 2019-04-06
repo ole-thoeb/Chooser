@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+xmlns:app="http://schemas.android.com/apk/res-auto"
+android:layout_width="match_parent"
+android:layout_height="wrap_content"
+android:orientation="horizontal">
+
+<ImageView
+    android:layout_width="24dp"
+    android:layout_height="24dp"
+    android:src="@drawable/ic_arrow_forward"
+    android:layout_gravity="start|center"
+    android:tint="?attr/colorOnBackground"
+    android:layout_marginVertical="@dimen/standardPadding"
+    android:layout_marginStart="@dimen/bigPadding" />
+
+    <TextView
+        android:id="@+id/timesTV"
+        android:layout_weight="1"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp"
+        android:layout_gravity="center"
+        android:textAlignment="center"
+        android:background="?attr/selectableItemBackground"
+        android:textAppearance="@style/TextAppearance.MaterialComponents.Body1"
+        android:text="10x" />
+
+    <TextView
+        android:id="@+id/sidesTV"
+        android:layout_weight="1"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_gravity="center"
+        android:textAlignment="center"
+        android:background="?attr/selectableItemBackground"
+        android:textAppearance="@style/TextAppearance.MaterialComponents.Body1"
+        android:text="W6" />
+
+    <ImageButton
+        android:id="@+id/colorButton"
+        android:layout_width="34dp"
+        android:layout_height="34dp"
+        android:layout_margin="5dp"
+        android:layout_marginVertical="3dp"
+        android:layout_marginEnd="11dp"
+        android:layout_marginBottom="8dp"
+        android:background="@drawable/circle"
+        android:padding="5dp"
+        android:tint="?attr/colorOnBackground"
+        app:srcCompat="@drawable/ic_color" />
+
+    <ImageButton
+        android:id="@+id/deleteButton"
+        android:layout_width="34dp"
+        android:layout_height="34dp"
+        android:padding="5dp"
+        android:layout_margin="5dp"
+        android:layout_gravity="end|top"
+        android:scaleType="centerCrop"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:src="@drawable/ic_clear"
+        android:tint="?attr/colorOnBackground"
+        android:layout_marginEnd="11dp"
+        android:layout_marginVertical="3dp"/>
+
+</LinearLayout>

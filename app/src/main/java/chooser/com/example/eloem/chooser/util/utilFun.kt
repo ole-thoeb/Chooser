@@ -1,6 +1,7 @@
 package chooser.com.example.eloem.chooser.util
 
 import android.content.Context
+import android.os.IBinder
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.TypedValue
@@ -10,11 +11,9 @@ import chooser.com.example.eloem.chooser.R
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import java.util.*
 
-fun hideSoftKeyboard(context: Context?, view: View?){
-    if (context != null) {
-        val ipm = context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-        ipm.hideSoftInputFromWindow(view?.windowToken, 0)
-    }
+fun hideSoftKeyboard(context: Context, token: IBinder){
+    val ipm = context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+    ipm.hideSoftInputFromWindow(token, 0)
 }
 
 fun View.showKeyboard() {
@@ -22,10 +21,10 @@ fun View.showKeyboard() {
     imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, InputMethodManager.HIDE_IMPLICIT_ONLY)
 }
 
-fun View.focusAndShowKeyboard() {
+fun View.focusAndShowKeyboard(showFlag: Int = InputMethodManager.SHOW_FORCED) {
     requestFocusFromTouch()
     val imm = context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-    imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, InputMethodManager.HIDE_IMPLICIT_ONLY)
+    imm.toggleSoftInput(showFlag, InputMethodManager.HIDE_IMPLICIT_ONLY)
 }
 
 fun randomInt(from: Int, to: Int) = Random().nextInt(to - from) + from
@@ -67,6 +66,19 @@ inline fun afterTextChanged(crossinline action: (Editable?) -> Unit): TextWatche
         override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
         }
     }
+}
+
+inline fun <T> MutableList<T>.filterAndRemove(predicate: (T) -> Boolean): List<T> {
+    val iter = iterator()
+    val outList = mutableListOf<T>()
+    while (iter.hasNext()) {
+        val value = iter.next()
+        if (predicate(value)) {
+            outList.add(value)
+            iter.remove()
+        }
+    }
+    return outList
 }
 
 inline fun showDeleteDialog(context: Context, crossinline deleteAction: () -> Unit) {

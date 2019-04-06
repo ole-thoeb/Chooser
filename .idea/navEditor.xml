@@ -18,23 +18,75 @@
                       <LayoutPositions />
                     </value>
                   </entry>
-                  <entry key="addChooserItemChooserFragment">
+                  <entry key="chooserItemChooserEditorFragment">
                     <value>
                       <LayoutPositions>
                         <option name="myPosition">
                           <Point>
-                            <option name="x" value="265" />
-                            <option name="y" value="299" />
+                            <option name="x" value="158" />
+                            <option name="y" value="191" />
                           </Point>
                         </option>
                         <option name="myPositions">
                           <map>
-                            <entry key="action_addChooserItemChooserFragment_to_displayOrderChooserFragment">
+                            <entry key="action_chooserItemChooserEditorFragment_to_diceEditorFragment">
                               <value>
                                 <LayoutPositions />
                               </value>
                             </entry>
-                            <entry key="action_addChooserItemChooserFragment_to_displayPickChooserFragment">
+                            <entry key="action_chooserItemChooserEditorFragment_to_displayOrderChooserFragment">
+                              <value>
+                                <LayoutPositions />
+                              </value>
+                            </entry>
+                            <entry key="action_chooserItemChooserEditorFragment_to_displayPickChooserFragment">
+                              <value>
+                                <LayoutPositions />
+                              </value>
+                            </entry>
+                          </map>
+                        </option>
+                      </LayoutPositions>
+                    </value>
+                  </entry>
+                  <entry key="diceEditorFragment">
+                    <value>
+                      <LayoutPositions>
+                        <option name="myPosition">
+                          <Point>
+                            <option name="x" value="331" />
+                            <option name="y" value="484" />
+                          </Point>
+                        </option>
+                        <option name="myPositions">
+                          <map>
+                            <entry key="action_diceEditorFragment_to_chooserItemChooserEditorFragment">
+                              <value>
+                                <LayoutPositions />
+                              </value>
+                            </entry>
+                            <entry key="action_diceEditorFragment_to_displayMultiDiceListFragment">
+                              <value>
+                                <LayoutPositions />
+                              </value>
+                            </entry>
+                          </map>
+                        </option>
+                      </LayoutPositions>
+                    </value>
+                  </entry>
+                  <entry key="displayMultiDiceListFragment">
+                    <value>
+                      <LayoutPositions>
+                        <option name="myPosition">
+                          <Point>
+                            <option name="x" value="612" />
+                            <option name="y" value="215" />
+                          </Point>
+                        </option>
+                        <option name="myPositions">
+                          <map>
+                            <entry key="action_displayMultiDiceListFragment_to_diceEditorFragment">
                               <value>
                                 <LayoutPositions />
                               </value>
@@ -49,8 +101,8 @@
                       <LayoutPositions>
                         <option name="myPosition">
                           <Point>
-                            <option name="x" value="472" />
-                            <option name="y" value="-350" />
+                            <option name="x" value="363" />
+                            <option name="y" value="-492" />
                           </Point>
                         </option>
                       </LayoutPositions>
@@ -61,8 +113,8 @@
                       <LayoutPositions>
                         <option name="myPosition">
                           <Point>
-                            <option name="x" value="492" />
-                            <option name="y" value="-1" />
+                            <option name="x" value="510" />
+                            <option name="y" value="-96" />
                           </Point>
                         </option>
                       </LayoutPositions>
@@ -73,12 +125,22 @@
                       <LayoutPositions>
                         <option name="myPosition">
                           <Point>
-                            <option name="x" value="57" />
-                            <option name="y" value="78" />
+                            <option name="x" value="-53" />
+                            <option name="y" value="-65" />
                           </Point>
                         </option>
                         <option name="myPositions">
                           <map>
+                            <entry key="action_listOfChooserFragment_to_diceEditorFragment">
+                              <value>
+                                <LayoutPositions />
+                              </value>
+                            </entry>
+                            <entry key="action_listOfChooserFragment_to_displayMultiDiceListFragment">
+                              <value>
+                                <LayoutPositions />
+                              </value>
+                            </entry>
                             <entry key="action_listOfChooserFragment_to_displayOrderChooserFragment">
                               <value>
                                 <LayoutPositions />

@@ -2,10 +2,10 @@ package chooser.com.example.eloem.chooser.database
 
 import androidx.annotation.WorkerThread
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
 import chooser.com.example.eloem.chooser.chooser.*
-import java.util.*
+import chooser.com.example.eloem.chooser.util.CombinedLiveData
+import chooser.com.example.eloem.chooser.util.filterAndRemove
 
 class ChooserRepository(private val chooserDao: ChooserDao) {
     
@@ -25,8 +25,8 @@ class ChooserRepository(private val chooserDao: ChooserDao) {
 
     @WorkerThread
     suspend fun insertChooserItemChooser(chooser: ChooserItemChooser<out ChooserItem>) {
-        chooserDao.insertSqlChooserItemChooser(chooser.getSqlChooser())
-        chooserDao.insertSqlChooserItems(chooser.getSqlItems())
+        chooserDao.insertSqlChooserItemChooser(chooser.toSqlType())
+        chooserDao.insertSqlChooserItems(chooser.itemsToSqlType())
     }
     
     @WorkerThread
@@ -52,5 +52,45 @@ class ChooserRepository(private val chooserDao: ChooserDao) {
     @WorkerThread
     suspend fun updateChooserAfterNext(chooser: ChooserItemChooser<out ChooserItem>) {
         chooserDao.updateSqlChooserItemChooser(chooser.toSqlType())
+    }
+    
+    
+    val allDiceList: LiveData<List<MultiDiceList>>
+    
+    
+    init {
+    
+        allDiceList = CombinedLiveData(chooserDao.getAllMultiDiceLists(), chooserDao.getAllMultiDices()) { lists, dices ->
+            if (lists == null || dices == null) return@CombinedLiveData emptyList<MultiDiceList>()
+            
+            val mutableDices = dices.toMutableList()
+            lists.map { multiDiceList ->
+                MultiDiceList(multiDiceList.id, multiDiceList.title,
+                        mutableDices.filterAndRemove { it.multiDice?.listId == multiDiceList.id }
+                                .map { it.toStandardMultiDice() })
+            }
+        }
+    }
+    
+    @WorkerThread
+    suspend fun deleteMultiDiceList(multiDiceList: MultiDiceList) {
+        chooserDao.deleteSqlMultiDiceList(multiDiceList.id)
+        chooserDao.deleteMultiDiceFromList(multiDiceList.id)
+        multiDiceList.forEach { chooserDao.deletCurrentFromDice(it.id) }
+    }
+    
+    @WorkerThread
+    suspend fun updateMultiDiceList(multiDiceList: MultiDiceList) {
+        chooserDao.updateMultiDiceList(multiDiceList)
+    }
+    
+    @WorkerThread
+    suspend fun updateMultiDiceListAfterRole(multiDiceList: MultiDiceList) {
+        chooserDao.updateMultiDiceListAfterRole(multiDiceList)
+    }
+    
+    @WorkerThread
+    suspend fun insertMultiDiceList(multiDiceList: MultiDiceList) {
+        chooserDao.insertMultiDiceList(multiDiceList)
     }
 }

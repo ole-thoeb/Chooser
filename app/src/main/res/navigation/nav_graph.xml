@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/listOfChooserFragment"
-        android:name="chooser.com.example.eloem.chooser.ListOfChooserFragment"
+        android:name="chooser.com.example.eloem.chooser.ui.ListOfChooserFragment"
         android:label="ListOfChooserFragment"
         app:layout="@layout/fragment_list_of_choosers">
         <action
@@ -16,10 +16,16 @@
         <action
             android:id="@+id/action_listOfChooserFragment_to_displayOrderChooserFragment"
             app:destination="@id/displayOrderChooserFragment" />
+        <action
+            android:id="@+id/action_listOfChooserFragment_to_displayMultiDiceListFragment"
+            app:destination="@id/displayMultiDiceListFragment" />
+        <action
+            android:id="@+id/action_listOfChooserFragment_to_diceEditorFragment"
+            app:destination="@id/diceEditorFragment" />
     </fragment>
     <fragment
         android:id="@+id/displayPickChooserFragment"
-        android:name="chooser.com.example.eloem.chooser.DisplayPickChooserFragment"
+        android:name="chooser.com.example.eloem.chooser.ui.display.DisplayPickChooserFragment"
         android:label="DisplayPickChooserFragment"
         app:layout="@layout/fragment_display_chooser" >
         <argument
@@ -33,23 +39,27 @@
     </fragment>
     <fragment
         android:id="@+id/chooserItemChooserEditorFragment"
-        android:name="chooser.com.example.eloem.chooser.ChooserItemChooserEditorFragment"
+        android:name="chooser.com.example.eloem.chooser.ui.editors.ChooserItemChooserEditorFragment"
         android:label="AChooserItemChooserFragment"
-        tools:layout="@layout/fragment_add_chooser_item_chooser">
+        tools:layout="@layout/fragment_chooser_item_chooser_editor">
         <action
             android:id="@+id/action_chooserItemChooserEditorFragment_to_displayPickChooserFragment"
             app:destination="@id/displayPickChooserFragment" />
         <argument
             android:name="chooserId"
-            android:defaultValue="-1"
             app:argType="integer" />
         <action
             android:id="@+id/action_chooserItemChooserEditorFragment_to_displayOrderChooserFragment"
             app:destination="@id/displayOrderChooserFragment" />
+        <action
+            android:id="@+id/action_chooserItemChooserEditorFragment_to_diceEditorFragment"
+            app:destination="@id/diceEditorFragment"
+            app:popUpTo="@+id/chooserItemChooserEditorFragment"
+            app:popUpToInclusive="true" />
     </fragment>
     <fragment
         android:id="@+id/displayOrderChooserFragment"
-        android:name="chooser.com.example.eloem.chooser.DisplayOrderChooserFragment"
+        android:name="chooser.com.example.eloem.chooser.ui.display.DisplayOrderChooserFragment"
         android:label="DisplayOrderChooserFragment"
         tools:layout="@layout/fragment_display_chooser" >
         <argument
@@ -66,9 +76,36 @@
         app:destination="@id/chooserItemChooserEditorFragment" />
     <fragment
         android:id="@+id/settingsFragment"
-        android:name="chooser.com.example.eloem.chooser.SettingsFragment"
+        android:name="chooser.com.example.eloem.chooser.ui.SettingsFragment"
         android:label="SettingsFragment" />
     <action
         android:id="@+id/action_global_settingsFragment"
         app:destination="@id/settingsFragment" />
+    <fragment
+        android:id="@+id/diceEditorFragment"
+        android:name="chooser.com.example.eloem.chooser.ui.editors.DiceEditorFragment"
+        android:label="DiceEditorFragment" >
+        <argument
+            android:name="diceListId"
+            app:argType="integer" />
+        <action
+            android:id="@+id/action_diceEditorFragment_to_chooserItemChooserEditorFragment"
+            app:destination="@id/chooserItemChooserEditorFragment"
+            app:popUpTo="@+id/diceEditorFragment"
+            app:popUpToInclusive="true" />
+        <action
+            android:id="@+id/action_diceEditorFragment_to_displayMultiDiceListFragment"
+            app:destination="@id/displayMultiDiceListFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/displayMultiDiceListFragment"
+        android:name="chooser.com.example.eloem.chooser.ui.display.DisplayMultiDiceListFragment"
+        android:label="DisplayMultiDiceListFragment" >
+        <argument
+            android:name="diceListId"
+            app:argType="integer" />
+        <action
+            android:id="@+id/action_displayMultiDiceListFragment_to_diceEditorFragment"
+            app:destination="@id/diceEditorFragment" />
+    </fragment>
 </navigation>

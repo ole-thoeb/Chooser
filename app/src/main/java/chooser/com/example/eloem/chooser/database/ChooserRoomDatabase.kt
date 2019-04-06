@@ -5,7 +5,13 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 
-@Database(entities = [ChooserItemChooserSql::class, ChooserItemSql::class], version = 1, exportSchema = false)
+@Database(entities = [
+    ChooserItemChooserSql::class,
+    ChooserItemSql::class,
+    MultiDiceListSql::class,
+    MultiDiceSql::class,
+    MultiDiceCurrentSql::class
+], version = 2, exportSchema = false)
 abstract class ChooserRoomDatabase: RoomDatabase() {
     abstract fun chooserDao(): ChooserDao
     
@@ -22,8 +28,9 @@ abstract class ChooserRoomDatabase: RoomDatabase() {
                 val instance = Room.databaseBuilder(
                         context.applicationContext,
                         ChooserRoomDatabase::class.java,
-                        "chooser_database"
-                ).build()
+                        "chooser_database")
+                        .fallbackToDestructiveMigration()
+                        .build()
                 INSTANCE = instance
                 return instance
             }

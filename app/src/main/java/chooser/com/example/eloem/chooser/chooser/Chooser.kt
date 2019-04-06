@@ -34,28 +34,8 @@ interface NumberRangeChooser: Chooser<Int> {
     val range: IntRange
 }
 
-open class Dice(override val id: Int,
-                override val title: String,
-                val sides: Int,
-                override var current: Int = randomInt(1..sides)): NumberRangeChooser {
-    
-    override fun next(): Int {
-        current = randomInt(range)
-        return current
-    }
-    
-    override val range: IntRange = 1..sides
-}
 
-interface ListChooser<T, C: Chooser<T>>: Chooser<List<T>>, List<C> {
-    override val id: Int
-    override var title: String
-    
-    override val current: List<T>
-    override fun next(): List<T>
-}
-
-open class DicesChooser(override val id: Int,
+/*open class DicesChooser(override val diceId: Int,
                         override var title: String,
                         private val items: List<Dice>): ListChooser<Int, Dice>, List<Dice> by items {
     
@@ -65,4 +45,4 @@ open class DicesChooser(override val id: Int,
         forEach { it.next() }
         return current
     }
-}
+}*/

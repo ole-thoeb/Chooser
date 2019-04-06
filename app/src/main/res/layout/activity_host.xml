@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".HostActivity"
+    tools:context=".ui.HostActivity"
     android:id="@+id/rootCoordinator">
 
     <com.google.android.material.appbar.AppBarLayout
@@ -31,12 +31,11 @@
 
     <include layout="@layout/bottom_sheet"/>
 
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
+    <chooser.com.example.eloem.chooser.helperClasses.AnimatedIconFab
         android:id="@+id/mainFab"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/fab_margin"
-        android:src="@drawable/ic_arrow_forward"
         android:tint="?attr/colorOnSecondary"
         app:layout_anchor="@id/bottomSheet"
         app:layout_anchorGravity="end|top" />

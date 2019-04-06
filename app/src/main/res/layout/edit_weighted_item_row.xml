@@ -24,6 +24,7 @@
         android:inputType="textCapSentences|textMultiLine"
         android:background="@android:color/transparent"
         android:scrollbars="none"
+        android:imeOptions="flagNoExtractUi"
         android:textSize="@dimen/standardTextSize"
         android:paddingStart="11dp"
         android:paddingEnd="@dimen/bigPadding"

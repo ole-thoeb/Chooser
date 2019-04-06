@@ -1,4 +1,4 @@
-package chooser.com.example.eloem.chooser
+package chooser.com.example.eloem.chooser.ui.display
 
 import android.view.Menu
 import android.view.MenuInflater
@@ -8,6 +8,8 @@ import chooser.com.example.eloem.chooser.chooser.ChooserItemChooser
 import chooser.com.example.eloem.chooser.chooser.Depletable
 import chooser.com.example.eloem.chooser.chooser.OrderChooser
 import kotlinx.android.synthetic.main.fragment_display_chooser.*
+import chooser.com.example.eloem.chooser.helperClasses.AnimatedIconFab
+import chooser.com.example.eloem.chooser.R
 
 open class DisplayOrderChooserFragment<T: OrderChooser<*>> : DisplayPickChooserFragment<T>() {
     
@@ -33,11 +35,9 @@ open class DisplayOrderChooserFragment<T: OrderChooser<*>> : DisplayPickChooserF
     
     open fun restartChooser(){
         chooser?.let {
-            view?.let { view ->
-                if (it is OrderChooser<*>) {
-                    it.restart()
-                    globalViewModel.restartChooserUiFeedBack(it, hostActivity.rootView, hostActivity.mainFab)
-                }
+            if (it is OrderChooser<*>) {
+                it.restart()
+                globalViewModel.restartChooserUiFeedBack(it, hostActivity.rootView, hostActivity.mainFab)
             }
         }
     }
@@ -63,10 +63,10 @@ open class DisplayOrderChooserFragment<T: OrderChooser<*>> : DisplayPickChooserF
         
         if (!newChooser.hasNoItems) {
             progressTV.text = resources.getString(R.string.progressString, newChooser.currentPos + 1, newChooser.items.size)
-            hostActivity.mainFab.setImageResource(if (!newChooser.hasNextItem) {
-                R.drawable.ic_refresh
+            hostActivity.mainFab.animateToIcon(if (!newChooser.hasNextItem) {
+                AnimatedIconFab.Icon.REFRESH
             } else {
-                R.drawable.ic_arrow_forward
+                AnimatedIconFab.Icon.NEXT
             })
         }
     }

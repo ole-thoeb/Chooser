@@ -9,8 +9,11 @@
 
     <string name="newItem">Neues Item</string>
     <string name="addItem">Item</string>
-
+    <string name="addDice">Würfel</string>
     <string name="title">Titel</string>
+
+    <string name="diceSides">W%1$d</string>
+    <string name="diceTimes">%1$d×</string>
 
     <string name="progressString">%1$d/%2$d</string>
     <string name="displayItemListString">%1$d.  %2$s</string>
@@ -22,22 +25,26 @@
         <item quantity="other">%1$d Items</item>
     </plurals>
     <string name="noItem">Kein Item</string>
+    <string name="diceAmount">%1$d Würfel</string>
 
     <string name="mode">Modus</string>
     <string name="randomPick">Zufällige Wahl</string>
     <string name="randomOrder">Zufällige Reihenfolge</string>
     <string name="randomWeightedPick">Zufällige gewichtete Wahl</string>
+    <string name="dices">Würfel</string>
 
     <string name="modeRandomOrder">Modus: z Reihenfolge</string>
     <string name="modeRandomPick">Modus: z Wahl</string>
 
     <string name="chooseMode">Wähle Modus</string>
+    <string name="chooseColor">Wähle eine Farbe</string>
 
     <string-array name="modeArray">
         <item>@string/randomOrder</item>
         <item>@string/randomPick</item>
 
         <item>@string/randomWeightedPick</item>
+        <item>@string/dices</item>
     </string-array>
 
     <string name="error">ERROR</string>
@@ -46,6 +53,13 @@
     <string name="messageWeightGreaterZero">Die Gewichtung muss mindestens 1 sein</string>
     <string name="dialogTitleSetWeight">Gewichtung</string>
     <string name="hintSetWeight">Gewichtung</string>
+
+    <string name="hintSetTimes">Würfe</string>
+    <string name="messageTimesGreaterZero">Würfe müssen mindestens 1 sein</string>
+
+    <string name="hintSetSides">Seiten</string>
+    <string name="messageSidesGreaterZero">Seite müssen mindestens 1 sein</string>
+
 
     <plurals name="deletedChooserMessage">
         <item quantity="one">Chooser gelöscht</item>

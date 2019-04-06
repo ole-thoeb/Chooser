@@ -1,83 +1,51 @@
-package chooser.com.example.eloem.chooser
+package chooser.com.example.eloem.chooser.ui.editors
 
-import android.annotation.SuppressLint
-import android.app.ActionBar
 import android.os.Bundle
 import android.view.*
-import android.widget.EditText
 import android.widget.ImageButton
-import android.widget.Toast
-import androidx.appcompat.app.ActionBar.*
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import chooser.com.example.eloem.chooser.ui.GlobalViewModel
+import chooser.com.example.eloem.chooser.R
 import chooser.com.example.eloem.chooser.chooser.*
-import chooser.com.example.eloem.chooser.helperClasses.*
-import chooser.com.example.eloem.chooser.util.*
+import chooser.com.example.eloem.chooser.helperClasses.AnimatedIconFab
+import chooser.com.example.eloem.chooser.helperClasses.WeightProgressDrawable
 import chooser.com.example.eloem.chooser.recyclerview.EditListAdapter
+import chooser.com.example.eloem.chooser.util.*
+import com.example.eloem.dartCounter.recyclerview.BottomSpacingAdapter
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import emil.beothy.widget.BetterEditText
-import kotlinx.android.synthetic.main.actionbar_layout.view.*
 import kotlinx.android.synthetic.main.fragment_add_order_chooser.*
-import kotlinx.android.synthetic.main.dialog_add_chooser_item_chooser_weight.view.*
-import java.util.UnknownFormatFlagsException
+import java.util.*
 
-open class ChooserItemChooserEditorFragment : ChildFragment() {
-    
-    private lateinit var modeOption: MenuItem
-    
-    private val globalViewModel: GlobalViewModel by activityViewModel()
+open class ChooserItemChooserEditorFragment : EditorFragment() {
     
     private val arg: ChooserItemChooserEditorFragmentArgs by navArgs()
     private val chooserId: Int by lazy { arg.chooserId }
     private var currentType: String? = null
     private var currentFragment: AddChooserFragment? = null
     
-    private var toolbarBarText: EditText? = null
-    
-    var chooserTitle: String
-        set(value) { toolbarBarText?.setText(value) }
-        get() = toolbarBarText?.text?.toString() ?: ""
-    
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setHasOptionsMenu(true)
-    }
-    
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.container, container, false)
     }
     
-    @SuppressLint("InflateParams")
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        
-        hostActivity.supportActionBar?.apply {
-            setDisplayShowCustomEnabled(true)
-            val custView = layoutInflater.inflate(R.layout.actionbar_layout, null, false)
-            toolbarBarText = custView.actionBarText
-            val lParmas = LayoutParams(ActionBar.LayoutParams.MATCH_PARENT, ActionBar.LayoutParams.MATCH_PARENT)
-            setCustomView(custView, lParmas)
-            setDisplayHomeAsUpEnabled(true)
-            setDisplayShowTitleEnabled(false)
-        }
-        
-        hostActivity.hideBottomSheet()
         
         hostActivity.mainFab.setOnClickListener {
             if (currentType == OrderChooser.PARS_TYPE) {
                 findNavController()
-                        .navigate(ChooserItemChooserEditorFragmentDirections
-                                .actionChooserItemChooserEditorFragmentToDisplayOrderChooserFragment(chooserId, true))
+                        .navigate(ChooserItemChooserEditorFragmentDirections.actionChooserItemChooserEditorFragmentToDisplayOrderChooserFragment(chooserId, true))
             } else {
                 findNavController()
-                        .navigate(ChooserItemChooserEditorFragmentDirections
-                                .actionChooserItemChooserEditorFragmentToDisplayPickChooserFragment(chooserId, true))
+                        .navigate(ChooserItemChooserEditorFragmentDirections.actionChooserItemChooserEditorFragmentToDisplayPickChooserFragment(chooserId, true))
             }
         }
+        hostActivity.mainFab.animateToIcon(AnimatedIconFab.Icon.CHECK)
         
         var first = true
         globalViewModel.getChooserItemChooser(chooserId).observe(viewLifecycleOwner, Observer {
@@ -88,7 +56,7 @@ open class ChooserItemChooserEditorFragment : ChildFragment() {
         })
     }
     
-    private fun getTypedFragmentWithId(type: String): AddChooserFragment{
+    private fun getTypedFragmentWithId(type: String): AddChooserFragment {
         val fragment = when (type) {
             OrderChooser.PARS_TYPE -> AddOrderChooserFragment()
             PickChooser.PARS_TYPE -> AddPickChooserFragment()
@@ -124,9 +92,8 @@ open class ChooserItemChooserEditorFragment : ChildFragment() {
         })
     }
     
-    override fun onCreateOptionsMenu(menu: Menu, infalter: MenuInflater) {
-        infalter.inflate(R.menu.menu_add_list, menu)
-        modeOption = menu.findItem(R.id.mode)
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        super.onCreateOptionsMenu(menu, inflater)
         currentType?.let { setIcon(it) }
     }
     
@@ -153,6 +120,20 @@ open class ChooserItemChooserEditorFragment : ChildFragment() {
                             0 -> OrderChooser.PARS_TYPE
                             1 -> PickChooser.PARS_TYPE
                             2 -> WeightedChooser.PARS_TYPE
+                            3 -> {
+                                val chooser = currentFragment?.finaliseChooser()
+                                deletionExit = true
+    
+                                if (chooser != null) {
+                                    globalViewModel.transformChooserToMultiDiceList(chooser)
+                                } else {
+                                    globalViewModel.transformChooserToMultiDiceList(chooserId)
+                                }
+                                findNavController()
+                                        .navigate(ChooserItemChooserEditorFragmentDirections
+                                                .actionChooserItemChooserEditorFragmentToDiceEditorFragment(chooserId))
+                                return@setItems
+                            }
                             else -> throw Error("Unknown option for mode: $which")
                         }
                         switchFragment(newType)
@@ -166,8 +147,10 @@ open class ChooserItemChooserEditorFragment : ChildFragment() {
     
     override fun onPause() {
         super.onPause()
-        hideSoftKeyboard(requireContext(), view?.findFocus())
-        if (!deletionExit) currentFragment?.saveChooser()
+        view?.let {
+            hideSoftKeyboard(requireContext(), it.windowToken)
+        }
+        if (!deletionExit) currentFragment?.saveChooser(true)
     }
     
     companion object {
@@ -183,6 +166,7 @@ abstract class AddChooserFragment: Fragment(){
     val globalViewModel: GlobalViewModel by activityViewModel()
     val typedParentFragment: ChooserItemChooserEditorFragment by lazy { parentFragment as ChooserItemChooserEditorFragment }
     open var gChooser: ChooserItemChooser<out ChooserItem>? = null
+    lateinit var recyclerAdapter: ChooserItemAdapter
     
     abstract fun typeChooser(chooser: ChooserItemChooser<out ChooserItem>): ChooserItemChooser<out ChooserItem>
     
@@ -196,10 +180,10 @@ abstract class AddChooserFragment: Fragment(){
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
     
-        val recyclerAdapter = getAdapter(mutableListOf())
+        recyclerAdapter = getAdapter(mutableListOf())
         //set data to UI
         list.apply {
-            adapter = recyclerAdapter
+            adapter = BottomSpacingAdapter(recyclerAdapter, resources.getDimensionPixelSize(R.dimen.paddingBottomRecyclerView) / 2)
             layoutManager = LinearLayoutManager(context)
         }
         
@@ -220,27 +204,34 @@ abstract class AddChooserFragment: Fragment(){
         }
     }
     
-    open fun finaliseChooser(): ChooserItemChooser<out ChooserItem>? {
+    open fun finaliseChooser(clean: Boolean = false): ChooserItemChooser<out ChooserItem>? {
         val chooser = gChooser ?: return null
         //update List object
-        val cleanedItems = (list.adapter as ChooserItemAdapter).values
-                .filter { it.name != "" }
+    
         val title = typedParentFragment.chooserTitle
-        //when nothing was filled in -> discard list
-        if (cleanedItems.isEmpty() && title == "") {
-            globalViewModel.deleteChooserItemChooser(chooser.id)
-            //deleteChooserItemChooser(ctx, chooser.id)
-            return null
+        
+        val items = recyclerAdapter.values.run {
+            if(clean) {
+                val cleaned = filter { it.name != "" }
+    
+                //when nothing was filled in -> discard list
+                if (cleaned.isEmpty() && title == "") {
+                    globalViewModel.deleteChooserItemChooser(chooser.id)
+                    //deleteChooserItemChooser(ctx, chooser.diceId)
+                    return null
+                }
+                cleaned
+            } else this
         }
     
         //write/update data to database
         /*updateChooserItemChooser(ctx,
                 chooser.copy(pTitle = title, pItems = cleanedItems.toChooserItems().toMutableList()))*/
-        return chooser.copy(pTitle = title, pItems = cleanedItems.toWeightedChooserItem().toMutableList())
+        return chooser.copy(pTitle = title, pItems = items.toWeightedChooserItem().toMutableList())
     }
     
-    open fun saveChooser() {
-        val finalisedChooser = finaliseChooser()
+    open fun saveChooser(clean: Boolean = false) {
+        val finalisedChooser = finaliseChooser(clean)
         if (finalisedChooser != null) globalViewModel.updateChooserItemChooser(finalisedChooser)
     }
     
@@ -270,17 +261,17 @@ abstract class AddChooserFragment: Fragment(){
             VIEW_TYPE_EDIT_ROW -> EditViewHolder(
                     LayoutInflater
                             .from(context)
-                            .inflate(R.layout.edit_item_row, parent,false)
+                            .inflate(R.layout.edit_item_row, parent, false)
             )
             1 -> FootViewHolder(
                     LayoutInflater
                             .from(context)
-                            .inflate(R.layout.item_add_chooser_item_chooser_add_item, parent,false)
+                            .inflate(R.layout.item_chooser_item_chooser_editor_add_item, parent, false)
             )
             else -> FootViewHolder(
                     LayoutInflater
                             .from(context)
-                            .inflate(R.layout.item_add_chooser_item_chooser_add_item, parent,false)
+                            .inflate(R.layout.item_chooser_item_chooser_editor_add_item, parent, false)
             )
         }
         
@@ -352,17 +343,17 @@ open class AddWeightedChooserFragment: AddChooserFragment(){
             VIEW_TYPE_EDIT_ROW -> EditViewHolder(
                     LayoutInflater
                             .from(context)
-                            .inflate(R.layout.edit_weighted_item_row, parent,false)
+                            .inflate(R.layout.edit_weighted_item_row, parent, false)
             )
             1 -> FootViewHolder(
                     LayoutInflater
                             .from(context)
-                            .inflate(R.layout.item_add_chooser_item_chooser_add_item, parent,false)
+                            .inflate(R.layout.item_chooser_item_chooser_editor_add_item, parent, false)
             )
             else -> FootViewHolder(
                     LayoutInflater
                             .from(context)
-                            .inflate(R.layout.item_add_chooser_item_chooser_add_item, parent,false)
+                            .inflate(R.layout.item_chooser_item_chooser_editor_add_item, parent, false)
             )
         }
         
@@ -389,44 +380,17 @@ open class AddWeightedChooserFragment: AddChooserFragment(){
                     holder.weightButton.setOnClickListener {
                         val pos = holder.adapterPosition
                         
-                        @SuppressLint("InflateParams")
-                        val custView = LayoutInflater
-                                .from(context)
-                                .inflate(R.layout.dialog_add_chooser_item_chooser_weight, null, false)
-                        custView.weightET.apply {
-                            val sString = values[pos].weight.toString()
-                            setText(sString)
-                            setSelection(sString.length)
-                            addTextChangedListener(afterTextChanged { s ->
-                                val string = s.toString()
-                                error = if (!string.matches("""\d+""".toRegex()) || string == "0")
-                                    resources.getString(R.string.messageWeightGreaterZero)
-                                else null
-                            })
-                            
-                            showSoftInputOnFocus = true
-                            focusAndShowKeyboard()
-                        }
-                        
-                        MaterialAlertDialogBuilder(context)
-                                .setView(custView)
-                                .setPositiveButton(R.string.dialogPositive) { _, _ ->
-                                    val text = custView.weightET.text.toString()
-                                    if (!text.matches("""\d+""".toRegex()) || text == "0"){
-                                        Toast.makeText(context,
-                                                R.string.messageWeightGreaterZero,
-                                                Toast.LENGTH_SHORT)
-                                                .show()
-                                        return@setPositiveButton
-                                    }
+                        showEditDialog(context,
+                                context.getString(R.string.hintSetWeight),
+                                values[pos].weight.toString(),
+                                intNotGreaterZero,
+                                context.getString(R.string.messageWeightGreaterZero),
+                                { text, _, _ ->
                                     val newWeight = text.toInt()
                                     values[pos].weight = newWeight
-                                    
+            
                                     updateProgressPercent()
-                                }
-                                .setNegativeButton(R.string.dialogNegative) { _, _ -> }
-                                .show()
-                        
+                                })
                         //custView.weightET.focusAndShowKeyboard()
                     }
                 }
@@ -443,10 +407,12 @@ open class AddWeightedChooserFragment: AddChooserFragment(){
             val maxWeightLocal = maxWeight.toFloat()
             holders.forEach {
                 val pos = it.adapterPosition
-                if (it.itemViewType == VIEW_TYPE_EDIT_ROW) {
-                    it as EditViewHolder
-                    (it.weightButton.drawable as WeightProgressDrawable).progressPercent =
-                    (values[pos].weight / maxWeightLocal) * 100
+                if (pos in values.indices) {
+                    if (it.itemViewType == VIEW_TYPE_EDIT_ROW) {
+                        it as EditViewHolder
+                        (it.weightButton.drawable as WeightProgressDrawable).progressPercent =
+                                (values[pos].weight / maxWeightLocal) * 100
+                    }
                 }
             }
         }

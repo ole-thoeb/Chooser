@@ -5,16 +5,17 @@
     android:layout_height="wrap_content">
 
     <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/textInputLayout"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="@string/hintSetWeight">
+        android:layout_height="wrap_content">
 
     <com.google.android.material.textfield.TextInputEditText
-        android:id="@+id/weightET"
+        android:id="@+id/valueET"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:inputType="numberSigned"
         android:maxLength="10"
+        android:imeOptions="flagNoExtractUi"
         style="@style/Widget.MaterialComponents.TextInputEditText.FilledBox"/>
 
     </com.google.android.material.textfield.TextInputLayout>

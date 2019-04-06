@@ -1,4 +1,4 @@
-package chooser.com.example.eloem.chooser
+package chooser.com.example.eloem.chooser.ui.display
 
 import android.content.Context
 import android.os.Bundle
@@ -9,11 +9,14 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
+import chooser.com.example.eloem.chooser.ui.ChildFragment
+import chooser.com.example.eloem.chooser.ui.GlobalViewModel
 import chooser.com.example.eloem.chooser.chooser.ChooserItem
 import chooser.com.example.eloem.chooser.chooser.ChooserItemChooser
 import chooser.com.example.eloem.chooser.chooser.PickChooser
-import chooser.com.example.eloem.chooser.chooser.parsType
+import chooser.com.example.eloem.chooser.helperClasses.AnimatedIconFab
 import chooser.com.example.eloem.chooser.util.*
+import chooser.com.example.eloem.chooser.R
 import kotlinx.android.synthetic.main.fragment_display_chooser.*
 import kotlinx.android.synthetic.main.bottom_sheet.view.*
 import org.jetbrains.anko.doAsync
@@ -71,6 +74,7 @@ open class DisplayPickChooserFragment<T: PickChooser<*>>: ChildFragment() {
         //supportActionBar?.setDisplayShowTitleEnabled(false)
         
         hostActivity.mainFab.setOnClickListener { onFabPressed() }
+        hostActivity.mainFab.animateToIcon(AnimatedIconFab.Icon.NEXT)
         
         (activity as AppCompatActivity?)?.supportActionBar?.apply {
             setDisplayHomeAsUpEnabled(true)
@@ -106,8 +110,7 @@ open class DisplayPickChooserFragment<T: PickChooser<*>>: ChildFragment() {
     open fun editChooser(){
         chooser?.let {
             findNavController()
-                    .navigate(DisplayPickChooserFragmentDirections
-                            .actionGlobalAddChooserItemChooserFragment(it.id))
+                    .navigate(DisplayPickChooserFragmentDirections.actionGlobalAddChooserItemChooserFragment(it.id))
         }
     }
     

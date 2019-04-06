@@ -11,7 +11,7 @@ sealed class ChooserItemChooser<T: ChooserItem>(
 ): Chooser<ChooserItem>, ItemRandomizer<ChooserItem> {
     
     override var currentPos: Int = cPos
-        get() = if (field < items.size) {
+        get() = if (field in items.indices) {
             field
         } else {
             field = items.lastIndex

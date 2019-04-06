@@ -23,6 +23,7 @@
         android:background="@android:color/transparent"
         android:scrollbars="none"
         android:textSize="@dimen/standardTextSize"
+        android:imeOptions="flagNoExtractUi"
         android:paddingHorizontal="@dimen/bigPadding"
         android:layout_marginVertical="@dimen/standardPadding"/>
 

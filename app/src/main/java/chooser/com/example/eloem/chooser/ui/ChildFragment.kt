@@ -1,4 +1,4 @@
-package chooser.com.example.eloem.chooser
+package chooser.com.example.eloem.chooser.ui
 
 import androidx.fragment.app.Fragment
 

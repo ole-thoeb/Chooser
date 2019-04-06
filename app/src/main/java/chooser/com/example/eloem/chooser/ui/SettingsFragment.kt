@@ -1,13 +1,12 @@
-package chooser.com.example.eloem.chooser
+package chooser.com.example.eloem.chooser.ui
 
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import android.widget.FrameLayout
-import androidx.appcompat.app.AppCompatActivity
 import androidx.preference.ListPreference
 import androidx.preference.PreferenceFragmentCompat
 import androidx.recyclerview.widget.RecyclerView
+import chooser.com.example.eloem.chooser.R
 import chooser.com.example.eloem.chooser.util.getAttribute
 
 class SettingsFragment : PreferenceFragmentCompat() {
@@ -33,6 +32,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
             }
             
             hideBottomSheet()
+            hideFab()
         }
     }
     

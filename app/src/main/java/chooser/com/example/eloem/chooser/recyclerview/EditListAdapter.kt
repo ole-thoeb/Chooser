@@ -131,7 +131,7 @@ abstract class EditListAdapter<T>(var values: MutableList<T>):
             }
         }else {
             //if it was the last text view don't set focus and hide keyboard
-            hideSoftKeyboard(context, vH.itemNameET)
+            hideSoftKeyboard(context, vH.itemNameET.windowToken)
         }
         val removedItem = values[pos]
         values.removeAt(pos)
